@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentari Ilmu — Bilingual & Urusan Luar Negeri</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --dk: #0c302c; --gr: #184c47; --lg: #287b71;
+  --or: #F46B2C; --bl: #3E8FBC; --pk: #BC6FA7; --yw: #B2912A;
+  --wh: #ffffff; --bg: #f4f0e8; --muted: #6b6560;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dk);
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  padding:3rem 1.5rem;
+}
+
+/* ── HERO ─────────────────────────────────────────────────────────────── */
+.hero{
+  width:100%;max-width:1040px;
+  background:linear-gradient(135deg,var(--gr) 0%,var(--dk) 100%);
+  border-radius:18px;padding:3.5rem 3rem;color:var(--wh);
+  margin-bottom:2.5rem;position:relative;overflow:hidden;
+}
+.hero::before{content:'';position:absolute;top:-80px;right:-80px;width:380px;height:380px;
+  background:radial-gradient(circle,rgba(40,123,113,.35) 0%,transparent 70%);pointer-events:none;}
+.hero::after{content:'';position:absolute;bottom:-50px;left:25%;width:240px;height:240px;
+  background:radial-gradient(circle,rgba(244,107,44,.12) 0%,transparent 70%);pointer-events:none;}
+.hero-label{font-size:.66rem;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.45);margin-bottom:1.1rem;}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:600;line-height:1.18;margin-bottom:1rem;}
+.hero p{font-size:.92rem;color:rgba(255,255,255,.68);max-width:600px;line-height:1.85;}
+
+/* ── GRID ─────────────────────────────────────────────────────────────── */
+.grid{
+  width:100%;max-width:1040px;
+  display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;
+}
+.card{
+  background:var(--wh);border-radius:14px;padding:1.75rem;
+  display:flex;flex-direction:column;
+  border:2px solid transparent;box-shadow:0 1px 4px rgba(0,0,0,.05);
+  transition:all .2s;text-decoration:none;color:inherit;
+}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,.09);border-color:var(--lg);}
+.card.disabled{opacity:.55;cursor:default;}
+.card.disabled:hover{transform:none;box-shadow:0 1px 4px rgba(0,0,0,.05);border-color:transparent;}
+
+.card-head{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;}
+.card-icon{
+  width:48px;height:48px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1.5rem;
+}
+.card-title{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.25rem;color:var(--dk);}
+.card-meta{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:.2rem;}
+.card p{font-size:.82rem;color:#666;line-height:1.7;flex-grow:1;}
+.card-foot{margin-top:1.1rem;padding-top:.9rem;border-top:1px solid #f0ece3;
+  display:flex;align-items:center;justify-content:space-between;}
+.card-status{font-size:.66rem;font-weight:600;padding:.22rem .65rem;border-radius:20px;letter-spacing:.04em;}
+.status-live{background:#e8f5e9;color:#2E7D32;}
+.status-soon{background:#fff3e0;color:#bf360c;}
+.card-arrow{font-size:1.1rem;color:var(--lg);transition:transform .2s;}
+.card:hover .card-arrow{transform:translateX(4px);}
+
+/* ── FOOTER ───────────────────────────────────────────────────────────── */
+.footer{
+  width:100%;max-width:1040px;margin-top:2.5rem;
+  text-align:center;font-size:.72rem;color:var(--muted);
+  padding-top:1.5rem;border-top:1px solid #e5e0d5;
+}
+.footer strong{color:var(--lg);}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-label">Yayasan Mentari Ilmu &nbsp;·&nbsp; Bidang Bilingual dan Urusan Luar Negeri</div>
+  <h1>Pusat Kerja Bidang<br>Bilingual &amp; Urusan Luar Negeri</h1>
+  <p>Satu ruang kerja untuk OKR &amp; KPI, rencana aksi, sistem Bilingual Daily Journal, dan Mentari Ilmu Bilingual Guidebook — dikelola dan diperbarui secara berkelanjutan sepanjang tahun ajaran.</p>
+</div>
+
+<div class="grid">
+
+  <a class="card" href="okr-dashboard/index.html">
+    <div class="card-head">
+      <div class="card-icon" style="background:#e3f2fd">📊</div>
+      <div>
+        <div class="card-title">Dashboard OKR &amp; KPI</div>
+        <div class="card-meta">TP 2026/2027</div>
+      </div>
+    </div>
+    <p>Empat area program — Perpustakaan &amp; Literasi, Bilingual Culture, Kelas Internasional, dan Kolaborasi Internasional. Ritme kerja, handoff Bidang–Unit, on-track check, dan Executive View untuk pemantauan lintas unit.</p>
+    <div class="card-foot">
+      <span class="card-status status-live">Aktif</span>
+      <span class="card-arrow">→</span>
+    </div>
+  </a>
+
+  <a class="card disabled" href="#">
+    <div class="card-head">
+      <div class="card-icon" style="background:#fff8e1">📋</div>
+      <div>
+        <div class="card-title">Rencana Aksi</div>
+        <div class="card-meta">77 Kegiatan</div>
+      </div>
+    </div>
+    <p>Daftar lengkap kegiatan per OKR — pelaksana, periode, dan penanda kegiatan "Always" yang berjalan terus-menerus tanpa siklus tetap. Referensi kerja harian untuk Bidang dan Unit.</p>
+    <div class="card-foot">
+      <span class="card-status status-soon">Segera</span>
+      <span class="card-arrow">→</span>
+    </div>
+  </a>
+
+  <a class="card disabled" href="#">
+    <div class="card-head">
+      <div class="card-icon" style="background:#e8f5e9">🌐</div>
+      <div>
+        <div class="card-title">Bilingual Daily Journal</div>
+        <div class="card-meta">Panduan Sistem</div>
+      </div>
+    </div>
+    <p>Template WhatsApp untuk Daily Log dan Refleksi Mingguan Guru, struktur folder Google Drive, template laporan mingguan, dan alur kerja lengkap dari Senin hingga akhir bulan.</p>
+    <div class="card-foot">
+      <span class="card-status status-soon">Segera</span>
+      <span class="card-arrow">→</span>
+    </div>
+  </a>
+
+  <a class="card disabled" href="#">
+    <div class="card-head">
+      <div class="card-icon" style="background:#fce4ec">📖</div>
+      <div>
+        <div class="card-title">Bilingual Guidebook</div>
+        <div class="card-meta">BAB I–II selesai</div>
+      </div>
+    </div>
+    <p>Mentari Ilmu Bilingual Guidebook: Building English and Arabic Culture in the School. Kerangka, sistem 5 Level, CEFR, budaya Arabic, SOP implementasi, dan SME.</p>
+    <div class="card-foot">
+      <span class="card-status status-soon">Dalam Penyusunan</span>
+      <span class="card-arrow">→</span>
+    </div>
+  </a>
+
+</div>
+
+<div class="footer">
+  Dikelola oleh <strong>Bidang Bilingual dan Urusan Luar Negeri</strong> — Yayasan Mentari Ilmu, Karawang, Jawa Barat
+</div>
+
+</body>
+</html>
