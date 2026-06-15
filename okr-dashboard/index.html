@@ -1,1 +1,1380 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard OKR & KPI — EQA Manager Bilingual & Urusan Luar Negeri</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --dk: #0c302c; --gr: #184c47; --lg: #287b71;
+  --or: #F46B2C; --bl: #3E8FBC; --pk: #BC6FA7; --yw: #B2912A;
+  --wh: #ffffff; --bg: #f4f0e8; --muted: #6b6560;
+  --sidebar: 230px; --radius: 10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dk);display:flex;min-height:100vh;font-size:14px;}
 
+/* ── SIDEBAR ─────────────────────────────────────────────────────────── */
+.sidebar{width:var(--sidebar);background:var(--dk);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;padding:1.75rem 1.25rem;z-index:100;overflow-y:auto;transition:width .25s ease,padding .25s ease;}
+.sidebar.collapsed{width:60px;padding:1.25rem .75rem;}
+.sidebar.collapsed .sb-brand-title,
+.sidebar.collapsed .sb-brand-sub,
+.sidebar.collapsed .sb-label,
+.sidebar.collapsed .nav-label{display:none;}
+.sidebar.collapsed .nav-item{justify-content:center;padding:.55rem;}
+.sb-toggle{position:absolute;top:1rem;right:.75rem;background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);border-radius:6px;padding:.2rem .45rem;cursor:pointer;font-size:.75rem;transition:all .18s;}
+.sb-toggle:hover{background:rgba(255,255,255,.08);color:var(--wh);}
+.sb-brand{margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(255,255,255,.08);padding-right:2rem;}
+.sb-brand-title{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--wh);font-weight:600;line-height:1.35;letter-spacing:.01em;}
+.sb-brand-sub{font-size:.62rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.12em;margin-top:.35rem;display:block;}
+.sb-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.25);margin:1.5rem 0 .5rem .25rem;}
+.nav-item{display:flex;align-items:center;gap:.65rem;padding:.55rem .75rem;border-radius:8px;cursor:pointer;transition:all .18s;color:rgba(255,255,255,.5);font-size:.78rem;font-weight:400;margin-bottom:.15rem;user-select:none;}
+.nav-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.85);}
+.nav-item.active{background:var(--lg);color:var(--wh);font-weight:500;}
+.nav-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+
+/* ── MAIN ────────────────────────────────────────────────────────────── */
+.main{margin-left:var(--sidebar);flex:1;padding:2.5rem 2.75rem;max-width:calc(100vw - var(--sidebar));transition:margin-left .25s ease,max-width .25s ease;}
+.main.expanded{margin-left:60px;max-width:calc(100vw - 60px);}
+.section{display:none;}
+.section.active{display:block;animation:fadeUp .28s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── HOME ────────────────────────────────────────────────────────────── */
+.hero{background:linear-gradient(135deg,var(--gr) 0%,var(--dk) 100%);border-radius:16px;padding:3rem 3rem 2.5rem;color:var(--wh);margin-bottom:2rem;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:320px;height:320px;background:radial-gradient(circle,rgba(40,123,113,.35) 0%,transparent 70%);pointer-events:none;}
+.hero::after{content:'';position:absolute;bottom:-40px;left:30%;width:200px;height:200px;background:radial-gradient(circle,rgba(244,107,44,.12) 0%,transparent 70%);pointer-events:none;}
+.hero-label{font-size:.62rem;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,255,255,.45);margin-bottom:.9rem;}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:2.6rem;font-weight:600;line-height:1.15;margin-bottom:1rem;}
+.hero p{font-size:.9rem;color:rgba(255,255,255,.65);max-width:560px;line-height:1.8;}
+.area-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;margin-bottom:2rem;}
+.area-card{background:var(--wh);border-radius:var(--radius);padding:1.5rem;cursor:pointer;transition:all .2s;border:2px solid transparent;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.area-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.09);border-color:var(--lg);}
+.ac-head{display:flex;align-items:center;gap:.9rem;margin-bottom:.9rem;}
+.ac-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.ac-title{font-weight:600;font-size:.92rem;color:var(--dk);}
+.ac-meta{font-size:.68rem;color:var(--muted);margin-top:.1rem;}
+.area-card p{font-size:.78rem;color:#666;line-height:1.65;}
+.tags{display:flex;gap:.35rem;margin-top:.9rem;flex-wrap:wrap;}
+.tag{font-size:.62rem;padding:.18rem .55rem;border-radius:4px;font-weight:500;}
+
+/* ── PROGRESS OVERVIEW ───────────────────────────────────────────────── */
+.progress-overview{background:var(--wh);border-radius:var(--radius);padding:1.5rem 2rem;box-shadow:0 1px 4px rgba(0,0,0,.05);margin-bottom:2rem;}
+.po-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;}
+.po-header h3{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:600;color:var(--dk);}
+.po-note{font-size:.68rem;color:var(--muted);font-style:italic;}
+.po-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;}
+.po-item{display:flex;flex-direction:column;gap:.4rem;}
+.po-label{display:flex;justify-content:space-between;align-items:center;}
+.po-name{font-size:.75rem;font-weight:500;color:var(--dk);}
+.po-pct{font-size:.72rem;font-weight:600;color:var(--lg);}
+.po-bar{height:6px;background:#ede9e0;border-radius:3px;overflow:hidden;}
+.po-fill{height:100%;border-radius:3px;transition:width .5s ease;}
+
+/* ── ROADMAP ─────────────────────────────────────────────────────────── */
+.roadmap{background:var(--wh);border-radius:var(--radius);padding:1.5rem 2rem;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.roadmap h3{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:600;color:var(--dk);margin-bottom:.5rem;}
+.roadmap-sub{font-size:.75rem;color:var(--muted);margin-bottom:1.25rem;}
+.road-flow{display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem;align-items:start;}
+.road-step{background:var(--bg);border-radius:8px;padding:.9rem .85rem;border:1px solid #e0dbd0;text-align:center;}
+.road-step-num{width:24px;height:24px;background:var(--gr);color:var(--wh);border-radius:50%;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;}
+.road-step-name{font-size:.72rem;font-weight:600;color:var(--dk);line-height:1.35;margin-bottom:.3rem;}
+.road-step-desc{font-size:.65rem;color:var(--muted);line-height:1.5;}
+.road-arrow{display:flex;align-items:center;justify-content:center;color:#ccc;font-size:1rem;padding-top:2rem;}
+
+/* ── AREA HEADER ─────────────────────────────────────────────────────── */
+.area-hdr{margin-bottom:1.75rem;}
+.area-hdr-top{display:flex;align-items:center;gap:.9rem;margin-bottom:.3rem;}
+.area-hdr h2{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;}
+.area-hdr-meta{font-size:.75rem;color:var(--muted);}
+
+/* ── TABS ────────────────────────────────────────────────────────────── */
+.tab-group{display:flex;background:var(--wh);border-radius:9px;padding:3px;margin-bottom:1.75rem;width:fit-content;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.tab-btn{padding:.55rem 1.2rem;font-size:.78rem;font-weight:500;cursor:pointer;border-radius:7px;color:#999;transition:all .18s;white-space:nowrap;user-select:none;}
+.tab-btn:hover{color:var(--dk);}
+.tab-btn.active{background:var(--gr);color:var(--wh);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;animation:fadeUp .22s ease;}
+
+/* ── CARDS (generic) ─────────────────────────────────────────────────── */
+.card{background:var(--wh);border-radius:var(--radius);padding:2rem;box-shadow:0 1px 4px rgba(0,0,0,.05);margin-bottom:1.5rem;}
+.card-title{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:600;color:var(--dk);margin-bottom:.75rem;}
+.card p{font-size:.85rem;line-height:1.85;color:#444;margin-bottom:1rem;}
+.card p:last-child{margin-bottom:0;}
+.mandate{background:var(--bg);border-left:4px solid var(--lg);border-radius:0 8px 8px 0;padding:1.1rem 1.35rem;margin-top:1.25rem;}
+.mandate label{font-size:.6rem;text-transform:uppercase;letter-spacing:.12em;color:var(--lg);font-weight:600;display:block;margin-bottom:.45rem;}
+.mandate p{font-size:.83rem;color:var(--dk);font-weight:500;line-height:1.7;margin-bottom:0;}
+.mandate p em{font-style:normal;color:var(--or);font-weight:600;}
+.okr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.9rem;margin-top:1.5rem;}
+.okr-item{background:var(--bg);border-radius:8px;padding:1.1rem;border:1px solid #e0dbd0;}
+.okr-code{font-size:.62rem;font-weight:700;color:var(--lg);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem;}
+.okr-item p{font-size:.78rem;line-height:1.6;color:#555;margin-bottom:0;}
+
+/* ── RHYTHM ──────────────────────────────────────────────────────────── */
+.rhythm-wrap{background:var(--wh);border-radius:var(--radius);padding:2rem;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.rhythm-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.75rem;}
+.rhythm-hdr h3{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:600;color:var(--dk);}
+.legend{display:flex;gap:1.25rem;}
+.leg-item{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:var(--muted);}
+.leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.lane{display:grid;grid-template-columns:120px 1fr;gap:.75rem;align-items:start;padding:.75rem 0;border-bottom:1px solid #f0ece3;}
+.lane:last-child{border-bottom:none;}
+.freq-lbl{display:flex;align-items:center;gap:.5rem;padding-top:.35rem;}
+.freq-pulse{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.freq-name{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#aaa;}
+.lane-empty{padding:.35rem 0;font-size:.73rem;color:#ccc;font-style:italic;}
+.pills{display:flex;flex-wrap:wrap;gap:.45rem;padding:.2rem 0;}
+.pill{display:inline-flex;align-items:center;gap:.35rem;padding:.38rem .75rem;border-radius:20px;font-size:.73rem;line-height:1.35;}
+.pill-u{background:#e8f5e9;color:#2E7D32;border:1px solid #c8e6c9;}
+.pill-b{background:#fff3e0;color:#bf360c;border:1px solid #ffcc80;}
+.pill-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+
+/* ── HANDOFF ─────────────────────────────────────────────────────────── */
+.handoff-wrap{background:var(--wh);border-radius:var(--radius);padding:2rem;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.handoff-hdr{margin-bottom:1.75rem;}
+.handoff-hdr h3{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:600;color:var(--dk);margin-bottom:.3rem;}
+.handoff-hdr p{font-size:.78rem;color:var(--muted);}
+.hflow{display:grid;grid-template-columns:1fr 48px 1fr;gap:1.25rem;align-items:start;}
+.hcol h4{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:2px solid;}
+.hcol-bidang h4{color:var(--bl);border-color:var(--bl);}
+.hcol-unit h4{color:#2E7D32;border-color:#2E7D32;}
+.harrow{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:2rem;gap:2rem;color:#d0ccc5;font-size:1.3rem;}
+.hdoc{background:var(--bg);border-radius:8px;padding:.9rem 1rem;margin-bottom:.65rem;border:1px solid #e0dbd0;}
+.hdoc-name{font-size:.8rem;font-weight:600;color:var(--dk);margin-bottom:.25rem;}
+.hdoc-desc{font-size:.72rem;color:#666;line-height:1.55;}
+.hdoc-freq{display:inline-block;font-size:.6rem;padding:.12rem .45rem;border-radius:8px;background:var(--gr);color:var(--wh);font-weight:500;margin-top:.45rem;}
+.joins{margin-top:1.75rem;padding-top:1.75rem;border-top:1px solid #f0ece3;}
+.joins h4{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--or);margin-bottom:.9rem;}
+.join-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.65rem;}
+.join-item{background:#fff8f2;border:1px solid #ffdcc0;border-radius:8px;padding:.75rem .9rem;display:flex;gap:.55rem;align-items:flex-start;}
+.join-name{font-size:.76rem;color:#bf360c;font-weight:500;line-height:1.4;}
+.join-freq{font-size:.62rem;color:#aaa;display:block;margin-top:.2rem;}
+.scope-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem;}
+.scope-box{border-radius:8px;padding:1rem;}
+.scope-box-ok{background:#f1f8f1;border:1px solid #c8e6c9;}
+.scope-box-no{background:#fff5f5;border:1px solid #ffcdd2;}
+.scope-lbl{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.65rem;display:block;}
+.scope-lbl-ok{color:#2E7D32;}
+.scope-lbl-no{color:#C62828;}
+.scope-box li{font-size:.76rem;color:#444;padding:.25rem 0;border-bottom:1px solid rgba(0,0,0,.05);list-style:none;}
+.scope-box li:last-child{border-bottom:none;}
+
+/* ── CHECKLIST ───────────────────────────────────────────────────────── */
+.chk-wrap{background:var(--wh);border-radius:var(--radius);padding:2rem;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.chk-btn{padding:.6rem 1rem;font-size:.75rem;font-weight:600;border:none;border-radius:6px;cursor:pointer;transition:all .18s;}
+.chk-btn-primary{background:var(--lg);color:white;}
+.chk-btn-primary:hover{background:var(--gr);}
+.chk-btn-reset{background:#f0ece3;color:var(--muted);}
+.chk-btn-reset:hover{background:#e0dbd0;color:var(--dk);}
+.chk-hdr{margin-bottom:1.25rem;}
+.chk-hdr h3{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:600;color:var(--dk);margin-bottom:.3rem;}
+.chk-hdr p{font-size:.78rem;color:var(--muted);}
+.prog-bar{height:5px;background:#ede9e0;border-radius:3px;margin-bottom:.4rem;overflow:hidden;}
+.prog-fill{height:100%;background:var(--lg);border-radius:3px;transition:width .4s ease;}
+.prog-label{font-size:.7rem;color:var(--muted);text-align:right;margin-bottom:1.25rem;}
+.chk-item{display:flex;align-items:flex-start;gap:.9rem;padding:.85rem;border-radius:8px;cursor:pointer;border:1px solid transparent;transition:all .18s;margin-bottom:.35rem;user-select:none;}
+.chk-item.interactive:hover{background:var(--bg);border-color:#ddd;}
+.chk-item.readonly {cursor: default; background: #faf9f7; border: 1px dashed #e0dbd0;}
+.chk-item.done{background:#f1f8f1;border-color:#c8e6c9;}
+.chk-box{width:19px;height:19px;border:2px solid #ccc;border-radius:5px;flex-shrink:0;margin-top:.05rem;display:flex;align-items:center;justify-content:center;transition:all .18s;}
+.chk-item.done .chk-box{background:var(--lg);border-color:var(--lg);}
+.chk-item.readonly .chk-box { background: #e0dbd0; border-color: #d0ccc5; }
+.chk-tick{font-size:.65rem;color:var(--wh);opacity:0;transition:opacity .18s;}
+.chk-item.done .chk-tick{opacity:1;}
+.chk-text{font-size:.82rem;line-height:1.55;color:#555;transition:color .18s;}
+.chk-item.done .chk-text{color:#2E7D32;}
+.chk-saved-note{font-size:.68rem;color:var(--muted);font-style:italic;text-align:right;margin-top:.75rem;}
+
+/* ── VITAL SECTION ───────────────────────────────────────────────────── */
+.vital-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;}
+.vital-card{background:var(--wh);border-radius:var(--radius);padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.vital-area{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--lg);margin-bottom:1.1rem;padding-bottom:.65rem;border-bottom:1px solid #f0ece3;}
+.vital-item{display:flex;gap:.65rem;margin-bottom:.75rem;}
+.vital-star{color:var(--or);font-size:.85rem;flex-shrink:0;margin-top:.05rem;}
+.vital-code{font-size:.62rem;font-weight:700;color:var(--or);margin-bottom:.2rem;}
+.vital-name{font-size:.78rem;color:var(--dk);line-height:1.5;}
+.vital-owner{font-size:.62rem;color:#aaa;margin-top:.2rem;}
+.vital-note{font-size:.72rem;color:#aaa;font-style:italic;margin-top:.9rem;line-height:1.6;}
+
+/* ── COND NOTE ───────────────────────────────────────────────────────── */
+.cond-note{margin-top:1.25rem;padding:1rem 1.1rem;background:#f9f0ff;border-radius:8px;border-left:4px solid var(--pk);}
+.cond-note p{font-size:.78rem;color:#6A1B9A;line-height:1.7;margin-bottom:0;}
+.cond-note strong{font-weight:600;}
+
+/* ── EXECUTIVE DASHBOARD V5 ADDITIONS ───────────────────────────────── */
+.exec-unit-select{display:flex;align-items:center;gap:1rem;margin-bottom:2rem; background:var(--bg); padding:1rem 1.5rem; border-radius:10px; border: 1px solid #e0dbd0;}
+.exec-unit-select label{font-size:.85rem;font-weight:600;color:var(--dk);}
+.exec-overview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 2.5rem; }
+.exec-overview-card { background: var(--wh); border-radius: var(--radius); padding: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,.05); border-left: 4px solid var(--lg); }
+.exec-overview-title { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: .85rem; }
+.exec-overview-value { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 700; color: var(--dk); line-height: 1; margin-bottom: .5rem; }
+.exec-overview-sub { font-size: .75rem; color: var(--muted); }
+.unit-breakdown-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem; }
+
+/* ── COLLAPSED SIDEBAR ICONS ─────────────────────────────────────────── */
+.nav-icon{
+  display:none;width:30px;height:30px;border-radius:50%;
+  align-items:center;justify-content:center;
+  font-size:.85rem;flex-shrink:0;
+}
+.nav-icon-sq{border-radius:5px;font-size:.6rem;font-weight:700;
+  font-family:'DM Sans',sans-serif;color:var(--wh);letter-spacing:.04em;}
+.sidebar.collapsed .nav-dot{display:none;}
+.sidebar.collapsed .nav-icon{display:flex;}
+.sidebar.collapsed .nav-item{position:relative;}
+.sidebar.collapsed .nav-item:hover::after{
+  content:attr(data-label);
+  position:absolute;left:54px;top:50%;transform:translateY(-50%);
+  background:var(--gr);color:var(--wh);font-size:.72rem;font-weight:500;
+  white-space:nowrap;padding:.35rem .7rem;border-radius:6px;
+  z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.25);pointer-events:none;
+}
+
+/* ── KOLABORASI RECOMMENDATION ITEMS ─────────────────────────────────── */
+.rec-header{
+  display:flex;align-items:center;gap:.5rem;
+  font-size:.62rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--yw);margin-bottom:.9rem;
+  padding:.5rem .75rem;background:#fffde7;
+  border-radius:6px;border:1px solid #ffe082;
+}
+.chk-item.is-rec .chk-box{border-color:var(--yw);background:#fffde7;}
+.chk-item.is-rec .chk-tick{color:var(--yw) !important;opacity:1 !important;}
+.chk-item.is-rec:hover{background:#fffde7;border-color:#ffd54f;}
+.chk-item.is-rec.done{background:#fffbf0;border-color:var(--yw);}
+.chk-item.is-rec.done .chk-box{background:var(--yw);border-color:var(--yw);}
+.chk-item.is-rec.done .chk-text{color:#7a5200;}
+.chk-item.is-rec.readonly .chk-box{background:#fff8e1;border-color:#ffe082;}
+</style>
+</head>
+<body>
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <button class="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">☰</button>
+  <div class="sb-brand">
+    <div class="sb-brand-title">Dashboard OKR & KPI</div>
+    <span class="sb-brand-sub">EQA Manager · Bilingual &amp; Urusan Luar Negeri</span>
+  </div>
+
+  <div class="sb-label">Ikhtisar</div>
+  <div class="nav-item active" onclick="nav('home',this)" data-label="Beranda">
+    <div class="nav-dot" style="background:var(--lg)"></div>
+    <div class="nav-icon" style="background:var(--lg)">🏠</div>
+    <span class="nav-label">Beranda</span>
+  </div>
+  <div class="nav-item" onclick="nav('vital',this)" data-label="VITAL Gates">
+    <div class="nav-dot" style="background:var(--or)"></div>
+    <div class="nav-icon" style="background:var(--or)">★</div>
+    <span class="nav-label">★ VITAL Gates</span>
+  </div>
+
+  <div class="sb-label">Area Program</div>
+  <div class="nav-item" onclick="nav('perp',this)" data-label="Perpustakaan & Literasi">
+    <div class="nav-dot" style="background:#2E7D32"></div>
+    <div class="nav-icon" style="background:#2E7D32">📚</div>
+    <span class="nav-label">Perpustakaan &amp; Literasi</span>
+  </div>
+  <div class="nav-item" onclick="nav('bil',this)" data-label="Bilingual Culture">
+    <div class="nav-dot" style="background:var(--bl)"></div>
+    <div class="nav-icon" style="background:var(--bl)">🌐</div>
+    <span class="nav-label">Bilingual Culture</span>
+  </div>
+  <div class="nav-item" onclick="nav('int',this)" data-label="Kelas Internasional">
+    <div class="nav-dot" style="background:var(--yw)"></div>
+    <div class="nav-icon" style="background:var(--yw)">🎓</div>
+    <span class="nav-label">Kelas Internasional</span>
+  </div>
+  <div class="nav-item" onclick="nav('kol',this)" data-label="Kolaborasi Internasional">
+    <div class="nav-dot" style="background:var(--pk)"></div>
+    <div class="nav-icon" style="background:var(--pk)">🤝</div>
+    <span class="nav-label">Kolaborasi Internasional</span>
+  </div>
+
+  <div class="sb-label" style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.08);">Pemantauan</div>
+  <div class="nav-item" onclick="nav('exec',this)" data-label="Executive View">
+    <div class="nav-dot" style="background:#888"></div>
+    <div class="nav-icon nav-icon-sq" style="background:#555">EX</div>
+    <span class="nav-label">Executive View</span>
+  </div>
+</aside>
+
+<!-- ══ MAIN ═════════════════════════════════════════════════════════════ -->
+<main class="main" id="main">
+
+<!-- ── HOME ─────────────────────────────────────────────────────────── -->
+<section id="sec-home" class="section active">
+  <div class="hero">
+    <div class="hero-label">Yayasan Mentari Ilmu &nbsp;·&nbsp; Tahun Pelajaran 2026/2027</div>
+    <h1>OKR &amp; KPI<br>EQA Manager Bilingual dan<br>Urusan Luar Negeri</h1>
+    <p>Panduan kerja operasional antara EQA Manager dan unit sekolah dalam membangun mutu bilingual, literasi, dan keterbukaan internasional di seluruh lingkungan yayasan.</p>
+  </div>
+
+  <div class="area-grid" id="area-cards">
+    <div class="area-card" data-target="perp">
+      <div class="ac-head">
+        <div class="ac-icon" style="background:#e8f5e9">📚</div>
+        <div><div class="ac-title">Perpustakaan &amp; Literasi</div><div class="ac-meta">3 OKR · 13 KPI</div></div>
+      </div>
+      <p>Standarisasi pengelolaan perpustakaan, pengadaan buku terstruktur, dan program literasi yang berdampak pada budaya baca murid dan guru.</p>
+      <div class="tags">
+        <span class="tag" style="background:#e8f5e9;color:#2E7D32">1.8.1</span>
+        <span class="tag" style="background:#e8f5e9;color:#2E7D32">1.8.2</span>
+        <span class="tag" style="background:#e8f5e9;color:#2E7D32">1.8.3</span>
+      </div>
+    </div>
+    <div class="area-card" data-target="bil">
+      <div class="ac-head">
+        <div class="ac-icon" style="background:#e3f2fd">🌐</div>
+        <div><div class="ac-title">Bilingual</div><div class="ac-meta">3 OKR · 14 KPI</div></div>
+      </div>
+      <p>Penerapan Bilingual Culture Arab–Inggris yang konsisten, peningkatan kompetensi bahasa Inggris GTK melalui EPT dan pelatihan terstruktur.</p>
+      <div class="tags">
+        <span class="tag" style="background:#e3f2fd;color:#1565C0">1.9.1</span>
+        <span class="tag" style="background:#e3f2fd;color:#1565C0">1.9.2</span>
+        <span class="tag" style="background:#e3f2fd;color:#1565C0">1.9.3</span>
+      </div>
+    </div>
+    <div class="area-card" data-target="int">
+      <div class="ac-head">
+        <div class="ac-icon" style="background:#fff8e1">🎓</div>
+        <div><div class="ac-title">Kelas Internasional</div><div class="ac-meta">2 OKR · 10 KPI</div></div>
+      </div>
+      <p>Pengembangan kelas internasional SMA berbasis Cambridge, simulasi past papers, dan pendampingan murid menuju universitas luar negeri.</p>
+      <div class="tags">
+        <span class="tag" style="background:#fff8e1;color:#b7791f">1.10.1</span>
+        <span class="tag" style="background:#fff8e1;color:#b7791f">1.10.2</span>
+      </div>
+    </div>
+    <div class="area-card" data-target="kol">
+      <div class="ac-head">
+        <div class="ac-icon" style="background:#fce4ec">🤝</div>
+        <div><div class="ac-title">Kolaborasi Internasional</div><div class="ac-meta">1 OKR · 6 KPI</div></div>
+      </div>
+      <p>Membangun dan memelihara kerjasama akademik dengan lembaga dan tokoh pendidikan luar negeri yang berdampak pada guru dan murid.</p>
+      <div class="tags">
+        <span class="tag" style="background:#fce4ec;color:#BC6FA7">4.1.1</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Overview -->
+  <div class="progress-overview">
+    <div class="po-header">
+      <h3>Progres Lintas Unit</h3>
+      <span class="po-note">Rata-rata aktual berdasarkan pengisian di Executive View</span>
+    </div>
+    <div class="po-grid">
+      <div class="po-item">
+        <div class="po-label"><span class="po-name">📚 Perpustakaan &amp; Literasi</span><span class="po-pct" id="overview-perp-pct">0%</span></div>
+        <div class="po-bar"><div class="po-fill" id="overview-perp" style="width:0%;background:#2E7D32"></div></div>
+      </div>
+      <div class="po-item">
+        <div class="po-label"><span class="po-name">🌐 Bilingual</span><span class="po-pct" id="overview-bil-pct">0%</span></div>
+        <div class="po-bar"><div class="po-fill" id="overview-bil" style="width:0%;background:var(--bl)"></div></div>
+      </div>
+      <div class="po-item">
+        <div class="po-label"><span class="po-name">🎓 Kelas Internasional</span><span class="po-pct" id="overview-int-pct">0%</span></div>
+        <div class="po-bar"><div class="po-fill" id="overview-int" style="width:0%;background:var(--yw)"></div></div>
+      </div>
+      <div class="po-item">
+        <div class="po-label"><span class="po-name">🤝 Kolaborasi Internasional</span><span class="po-pct" id="overview-kol-pct">0%</span></div>
+        <div class="po-bar"><div class="po-fill" id="overview-kol" style="width:0%;background:var(--pk)"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OKR Dependency Flow -->
+  <div class="roadmap">
+    <h3>Alur Implementasi OKR</h3>
+    <div class="roadmap-sub">Urutan kerja operasional — setiap tahap mengandalkan tahap sebelumnya.</div>
+    <div class="road-flow">
+      <div class="road-step">
+        <div class="road-step-num">1</div>
+        <div class="road-step-name">Produksi VITAL</div>
+        <div class="road-step-desc">EQA Manager menyiapkan semua dokumen fondasi — panduan, instrumen, silabus.</div>
+      </div>
+      <div class="road-step">
+        <div class="road-step-num">2</div>
+        <div class="road-step-name">Orientasi Unit</div>
+        <div class="road-step-desc">Sosialisasi standar ke seluruh unit, penyusunan panduan khas unit.</div>
+      </div>
+      <div class="road-step">
+        <div class="road-step-num">3</div>
+        <div class="road-step-name">Pelaksanaan</div>
+        <div class="road-step-desc">Unit menjalankan kegiatan sesuai ritme — harian, mingguan, bulanan.</div>
+      </div>
+      <div class="road-step">
+        <div class="road-step-num">4</div>
+        <div class="road-step-name">Monitoring</div>
+        <div class="road-step-desc">Laporan progres bulanan, indeks konsistensi bilingual dikirimkan.</div>
+      </div>
+      <div class="road-step">
+        <div class="road-step-num">5</div>
+        <div class="road-step-name">Evaluasi</div>
+        <div class="road-step-desc">EPT, tes literasi, supervisi, verifikasi LoA oleh EQA Manager.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── VITAL GATES ───────────────────────────────────────────────────── -->
+<section id="sec-vital" class="section">
+  <div class="area-hdr">
+    <div class="area-hdr-top"><h2>★ VITAL Gates</h2></div>
+    <div class="area-hdr-meta">Dokumen dan instrumen fondasi yang harus ada sebelum program dapat berjalan. Sampai VITAL tersedia, kegiatan turunannya tidak bisa dimulai.</div>
+  </div>
+  <div class="vital-grid">
+    <div class="vital-card">
+      <div class="vital-area">📚 Perpustakaan &amp; Literasi</div>
+      <div class="vital-item"><div class="vital-star">★</div><div><div class="vital-code">1.8.1 — KPI 1</div><div class="vital-name">Panduan Induk Perpustakaan dan Literasi</div><div class="vital-owner">EQA Manager · Tahunan</div></div></div>
+      <div class="vital-item"><div class="vital-star">★</div><div><div class="vital-code">1.8.1 — KPI 2</div><div class="vital-name">Hasil Analisis Instrumen Akreditasi per Unit</div><div class="vital-owner">Unit · Tahunan</div></div></div>
+      <div class="vital-item"><div class="vital-star">★</div><div><div class="vital-code">1.8.1 — KPI 3</div><div class="vital-name">Rencana Aksi Pemenuhan Akreditasi Perpustakaan</div><div class="vital-owner">EQA Manager + Unit · Tahunan</div></div></div>
+      <div class="vital-item"><div class="vital-star">★</div><div><div class="vital-code">1.8.3 — KPI 1</div><div class="vital-name">Panduan Program Literasi (bagian Panduan Induk)</div><div class="vital-owner">EQA Manager · Tahunan</div></div></div>
+    </div>
+    <div class="vital-card">
+      <div class="vital-area">🌐 Bilingual</div>
+      <div class="vital-item"><div class="vital-star">★</div><div><div class="vital-code">1.9.1 — KPI 1</div><div class="vital-name">Bilingual Guidebook (standar Arab–Inggris)</div><div class="vital-owner">EQA Manager · Tahunan</div></div></div>
+      <div class="vital-item"><div class="vital-star">★</div><div><div class="vital-code">1.9.1 — KPI 2</div><div class="vital-name">Buku Panduan Budaya Bilingual Unit</div><div class="vital-owner">EQA Manager + Unit · Tahunan</div></div></div>
+      <div class="vital-item"><div class="vital-star">★</div><div><div class="vital-code">1.9.2 — KPI 1</div><div class="vital-name">Instrumen MI-English Proficiency Test (EPT)</div><div class="vital-owner">EQA Manager · Tahunan</div></div></div>
+      <div class="vital-item"><div class="vital-star">★</div><div><div class="vital-code">1.9.2 — KPI 7</div><div class="vital-name">Rapor Profisiensi Bahasa Inggris GTK (individual)</div><div class="vital-owner">EQA Manager · Semesteral</div></div></div>
+      <div class="vital-item"><div class="vital-star">★</div><div><div class="vital-code">1.9.3 — KPI 1</div><div class="vital-name">Silabus Pelatihan Bahasa Inggris (CEFR-differentiated)</div><div class="vital-owner">EQA Manager · Tahunan</div></div></div>
+    </div>
+    <div class="vital-card">
+      <div class="vital-area">🎓 Kelas Internasional</div>
+      <div class="vital-item"><div class="vital-star">★</div><div><div class="vital-code">1.10.1 — KPI 1a</div><div class="vital-name">Dokumen Program Reworked International Class SMA</div><div class="vital-owner">Unit (diverifikasi EQA Manager) · Tahunan</div></div></div>
+      <div class="vital-item"><div class="vital-star">★</div><div><div class="vital-code">1.10.1 — KPI 1b</div><div class="vital-name">Verifikasi Dokumen Program oleh EQA Manager</div><div class="vital-owner">EQA Manager · Tahunan</div></div></div>
+      <div class="vital-item"><div class="vital-star">★</div><div><div class="vital-code">1.10.2 — KPI 1a</div><div class="vital-name">Panduan Pendaftaran Universitas Luar Negeri</div><div class="vital-owner">Unit (diverifikasi EQA Manager) · Tahunan</div></div></div>
+      <div class="vital-item"><div class="vital-star">★</div><div><div class="vital-code">1.10.2 — KPI 1b</div><div class="vital-name">Verifikasi Panduan Pendaftaran oleh EQA Manager</div><div class="vital-owner">EQA Manager · Tahunan</div></div></div>
+    </div>
+    <div class="vital-card">
+      <div class="vital-area">🤝 Kolaborasi Internasional</div>
+      <div class="vital-item"><div class="vital-star">★</div><div><div class="vital-code">4.1.1 — KPI 1a</div><div class="vital-name">Kerangka Kerjasama Internasional</div><div class="vital-owner">EQA Manager · Tahunan</div></div></div>
+      <div class="vital-note">Kerangka ini adalah gerbang bagi unit untuk dapat memulai program kolaborasi internasional secara mandiri tanpa harus melalui Yayasan terlebih dahulu.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PERPUSTAKAAN & LITERASI ───────────────────────────────────────── -->
+<section id="sec-perp" class="section">
+  <div class="area-hdr">
+    <div class="area-hdr-top">
+      <div class="ac-icon" style="background:#e8f5e9; color:#2E7D32;">📚</div>
+      <h2>Perpustakaan &amp; Literasi</h2>
+    </div>
+    <div class="area-hdr-meta">OKR 1.8.1 · 1.8.2 · 1.8.3</div>
+  </div>
+
+  <div class="tab-group">
+    <div class="tab-btn active" onclick="tab(this,'perp-what')">Apa Ini?</div>
+    <div class="tab-btn" onclick="tab(this,'perp-rhythm')">Ritme Kerja</div>
+    <div class="tab-btn" onclick="tab(this,'perp-handoff')">Handoff EQA Manager–Unit</div>
+    <div class="tab-btn" onclick="tab(this,'perp-check')">On-Track Check</div>
+  </div>
+
+  <div id="perp-what" class="tab-panel active">
+    <div class="card">
+      <div class="card-title">Program Perpustakaan &amp; Literasi</div>
+      <p>Mari kita jadikan perpustakaan di setiap unit lebih dari sekadar tempat menyimpan buku. Melalui program ini, kita akan bersama-sama menghidupkan perpustakaan sebagai pusat belajar aktif yang terkelola dengan baik, di mana koleksinya terus berkembang dan mampu memupuk kebiasaan membaca seluruh warga sekolah.</p>
+      <p>Ada tiga pilar utama yang akan kita bangun bersama: persiapan <strong>akreditasi</strong> untuk memastikan pemenuhan standar operasional, <strong>pengadaan</strong> buku untuk memperkaya koleksi, serta <strong>program literasi</strong> untuk memastikan buku-buku tersebut benar-benar dinikmati dan terintegrasi dalam pembelajaran.</p>
+      <div class="mandate">
+        <label>Komitmen Bersama Kita</label>
+        <p>Kita akan bekerja berdampingan agar setiap unit dapat mencapai standar akreditasi, menjalankan pengadaan buku dengan terarah, dan mengawal program literasi yang membawa <em>dampak</em> nyata—dengan seluruh proses yang terdokumentasi rapi sebagai rekam jejak langkah kita.</p>
+      </div>
+      <div class="okr-grid">
+        <div class="okr-item"><div class="okr-code">OKR 1.8.1</div><p>Setiap unit sekolah memenuhi minimal 50% komponen instrumen akreditasi perpustakaan, dibuktikan dengan dokumen keterpenuhan yang terverifikasi.</p></div>
+        <div class="okr-item"><div class="okr-code">OKR 1.8.2</div><p>80% unit sekolah mencapai target pengadaan buku referensi murid sesuai ketetapan dalam panduan pengadaan.</p></div>
+        <div class="okr-item"><div class="okr-code">OKR 1.8.3</div><p>80% program literasi di setiap unit mencapai target, tercermin dari peningkatan budaya baca serta kemampuan literasi murid dan guru.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="perp-rhythm" class="tab-panel">
+    <div class="rhythm-wrap">
+      <div class="rhythm-hdr">
+        <h3>Ritme Kerja Unit — Perpustakaan &amp; Literasi</h3>
+        <div class="legend">
+          <div class="leg-item"><div class="leg-dot" style="background:#2E7D32"></div>Tanggung jawab Unit</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#bf360c"></div>Bersama EQA Manager</div>
+        </div>
+      </div>
+      <div class="lane"><div class="freq-lbl"><div class="freq-pulse" style="background:#ddd"></div><div class="freq-name">Harian</div></div><div class="lane-empty">Tidak ada kegiatan harian</div></div>
+      <div class="lane"><div class="freq-lbl"><div class="freq-pulse" style="background:#ddd"></div><div class="freq-name">Mingguan</div></div><div class="lane-empty">Tidak ada kegiatan mingguan</div></div>
+      <div class="lane">
+        <div class="freq-lbl"><div class="freq-pulse" style="background:var(--lg)"></div><div class="freq-name" style="color:var(--lg)">Bulanan</div></div>
+        <div class="pills">
+          <div class="pill pill-u"><div class="pill-dot" style="background:#2E7D32"></div>Pelaporan Progres Rencana Aksi Perpustakaan</div>
+          <div class="pill pill-u"><div class="pill-dot" style="background:#2E7D32"></div>Pencatatan &amp; Rekapitulasi Data Kunjungan Perpustakaan</div>
+        </div>
+      </div>
+      <div class="lane">
+        <div class="freq-lbl"><div class="freq-pulse" style="background:var(--bl)"></div><div class="freq-name" style="color:var(--bl)">Semesteral</div></div>
+        <div class="pills">
+          <div class="pill pill-u"><div class="pill-dot" style="background:#2E7D32"></div>Pemantauan Capaian Target Baca Guru &amp; Murid</div>
+          <div class="pill pill-b"><div class="pill-dot" style="background:#bf360c"></div>Supervisi Integrasi Program Literasi dalam Pembelajaran</div>
+          <div class="pill pill-b"><div class="pill-dot" style="background:#bf360c"></div>Pelaksanaan Tes Kemampuan Literasi</div>
+        </div>
+      </div>
+      <div class="lane">
+        <div class="freq-lbl"><div class="freq-pulse" style="background:var(--yw)"></div><div class="freq-name" style="color:var(--yw)">Tahunan</div></div>
+        <div class="pills">
+          <div class="pill pill-u"><div class="pill-dot" style="background:#2E7D32"></div>Analisis Instrumen Akreditasi Perpustakaan</div>
+          <div class="pill pill-b"><div class="pill-dot" style="background:#bf360c"></div>Penyusunan Rencana Aksi Pemenuhan Akreditasi</div>
+          <div class="pill pill-u"><div class="pill-dot" style="background:#2E7D32"></div>Pengadaan Buku Referensi Murid</div>
+          <div class="pill pill-b"><div class="pill-dot" style="background:#bf360c"></div>Pelaksanaan Tender Buku Teks Murid</div>
+          <div class="pill pill-u"><div class="pill-dot" style="background:#2E7D32"></div>Katalogisasi &amp; Aktivasi Koleksi Buku Baru</div>
+        </div>
+      </div>
+      <div class="lane"><div class="freq-lbl"><div class="freq-pulse" style="background:#ddd"></div><div class="freq-name">Kondisional</div></div><div class="lane-empty">Tidak ada kegiatan kondisional di area ini</div></div>
+    </div>
+  </div>
+
+  <div id="perp-handoff" class="tab-panel">
+    <div class="handoff-wrap">
+      <div class="handoff-hdr"><h3>Alur Handoff — EQA Manager &amp; Unit</h3><p>Dokumen yang EQA Manager berikan ke Unit, dan dokumen yang Unit serahkan kembali ke EQA Manager.</p></div>
+      <div class="hflow">
+        <div class="hcol hcol-bidang">
+          <h4>EQA Manager → Unit</h4>
+          <div class="hdoc"><div class="hdoc-name">Panduan Induk Perpustakaan &amp; Literasi</div><div class="hdoc-desc">Dokumen fondasi mencakup standar pengelolaan perpustakaan, panduan pengadaan buku, dan panduan program literasi.</div><span class="hdoc-freq">Tahunan</span></div>
+          <div class="hdoc"><div class="hdoc-name">Instrumen Akreditasi Perpustakaan</div><div class="hdoc-desc">Daftar komponen akreditasi yang harus dianalisis per unit sebagai dasar penyusunan rencana aksi.</div><span class="hdoc-freq">Tahunan</span></div>
+        </div>
+        <div class="harrow">⇄</div>
+        <div class="hcol hcol-unit">
+          <h4>Unit → EQA Manager</h4>
+          <div class="hdoc"><div class="hdoc-name">Hasil Analisis Instrumen Akreditasi</div><div class="hdoc-desc">Peta kelayakan komponen akreditasi per unit, diserahkan sebelum rencana aksi disusun.</div><span class="hdoc-freq">Tahunan</span></div>
+          <div class="hdoc"><div class="hdoc-name">Laporan Progres Rencana Aksi</div><div class="hdoc-desc">Dokumentasi progres pelaksanaan rencana aksi pemenuhan akreditasi.</div><span class="hdoc-freq">Bulanan</span></div>
+          <div class="hdoc"><div class="hdoc-name">Rekapitulasi Data Kunjungan Perpustakaan</div><div class="hdoc-desc">Data kunjungan dan peminjaman buku sebagai indikator aktivitas perpustakaan.</div><span class="hdoc-freq">Bulanan</span></div>
+          <div class="hdoc"><div class="hdoc-name">Hasil Tes Kemampuan Literasi</div><div class="hdoc-desc">Skor rata-rata murid dari dua pelaksanaan tes per tahun ajaran sebagai bukti dampak program literasi.</div><span class="hdoc-freq">Semesteral</span></div>
+        </div>
+      </div>
+      <div class="joins">
+        <h4>EQA Manager turun langsung — kegiatan bersama</h4>
+        <div class="join-grid">
+          <div class="join-item"><div><div class="join-name">Penyusunan Rencana Aksi Pemenuhan Akreditasi</div><span class="join-freq">Tahunan — EQA Manager memfasilitasi dan mereview</span></div></div>
+          <div class="join-item"><div><div class="join-name">Pelaksanaan Tender Buku Teks Murid</div><span class="join-freq">Tahunan — EQA Manager terlibat dalam proses seleksi</span></div></div>
+          <div class="join-item"><div><div class="join-name">Supervisi Integrasi Program Literasi</div><span class="join-freq">Semesteral — EQA Manager melakukan supervisi ke unit</span></div></div>
+          <div class="join-item"><div><div class="join-name">Pelaksanaan Tes Kemampuan Literasi</div><span class="join-freq">Semesteral — EQA Manager menyiapkan instrumen tes</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="perp-check" class="tab-panel">
+    <div class="chk-wrap" style="box-shadow: none; border: 1px solid #e0dbd0;">
+      <div class="chk-hdr">
+        <h3>On-Track Check — Perpustakaan &amp; Literasi</h3>
+        <p>Poin evaluasi implementasi. Untuk mengisi dan menyimpan data evaluasi unit secara aktual, silakan gunakan fitur <strong>Unit Monitoring</strong> di Executive View.</p>
+      </div>
+      <button class="chk-btn chk-btn-primary" style="margin-bottom: 1.5rem;" onclick="goToMonitoring()">Buka Unit Monitoring ➔</button>
+
+      <!-- READ-ONLY REFERENCE LIST -->
+      <div id="readonly-perp-list">
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">Panduan Induk Perpustakaan &amp; Literasi sudah diterima dari EQA Manager dan disosialisasikan ke staf perpustakaan</div></div>
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">Analisis instrumen akreditasi sudah selesai — peta kelayakan komponen tersedia dan diserahkan ke EQA Manager</div></div>
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">Rencana aksi pemenuhan akreditasi sudah disusun bersama EQA Manager dan mencakup minimal 50% komponen</div></div>
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">Data kunjungan dan peminjaman perpustakaan dicatat dan dilaporkan ke EQA Manager setiap bulan tanpa jeda</div></div>
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">Progres rencana aksi pemenuhan akreditasi dilaporkan ke EQA Manager setiap bulan</div></div>
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">Pengadaan buku tahun ini sudah mencapai minimal 100 judul baru sesuai komposisi kategori dalam panduan</div></div>
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">Seluruh buku baru sudah terkatalogisasi dan tersedia untuk dipinjam murid dan guru</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── BILINGUAL ─────────────────────────────────────────────────────── -->
+<section id="sec-bil" class="section">
+  <div class="area-hdr">
+    <div class="area-hdr-top">
+      <div class="ac-icon" style="background:#e3f2fd; color:#1565C0;">🌐</div>
+      <h2>Bilingual</h2>
+    </div>
+    <div class="area-hdr-meta">OKR 1.9.1 · 1.9.2 · 1.9.3</div>
+  </div>
+
+  <div class="tab-group">
+    <div class="tab-btn active" onclick="tab(this,'bil-what')">Apa Ini?</div>
+    <div class="tab-btn" onclick="tab(this,'bil-rhythm')">Ritme Kerja</div>
+    <div class="tab-btn" onclick="tab(this,'bil-handoff')">Handoff EQA Manager–Unit</div>
+    <div class="tab-btn" onclick="tab(this,'bil-check')">On-Track Check</div>
+  </div>
+
+  <div id="bil-what" class="tab-panel active">
+    <div class="card">
+      <div class="card-title">Program Bilingual</div>
+      <p>Melalui program ini, kita akan melangkah bersama untuk membangun ekosistem dwibahasa yang hidup. Kita akan membiasakan penggunaan bahasa Arab dan Inggris secara konsisten (Bilingual Culture), memetakan dan mengembangkan kemampuan bahasa Inggris para GTK melalui EPT, serta memperkuat kapasitas fasilitasi di masing-masing unit.</p>
+      <p>Ketiga pilar ini saling menguatkan. Budaya bilingual yang baik membutuhkan GTK yang cakap; GTK yang cakap dibentuk melalui pelatihan terstruktur; dan pelatihan yang sukses membutuhkan fasilitator handal di setiap unit. Mari kita bangun sistem ini sebagai satu kesatuan gerak.</p>
+      <div class="mandate">
+        <label>Komitmen Bersama Kita</label>
+        <p>Fokus kita bersama adalah menerapkan Bilingual Culture secara konsisten dalam keseharian, memastikan seluruh rekan GTK mengikuti evaluasi EPT untuk pemetaan yang tepat, dan menyelenggarakan pelatihan bahasa Inggris minimal <em>dua kali setahun</em> untuk melihat perkembangan yang bermakna.</p>
+      </div>
+      <div class="okr-grid">
+        <div class="okr-item"><div class="okr-code">OKR 1.9.1</div><p>80% unit menunjukkan keterlaksanaan Bilingual Culture (Arab–Inggris) sesuai standar, tercermin dari konsistensi penggunaan bahasa di lingkungan sekolah.</p></div>
+        <div class="okr-item"><div class="okr-code">OKR 1.9.2</div><p>85% GTK memiliki kemampuan Bahasa Inggris setara CEFR B1 atau lebih, dengan target terdiferensiasi per kelompok GTK.</p></div>
+        <div class="okr-item"><div class="okr-code">OKR 1.9.3</div><p>Setiap unit melaksanakan minimal 2 kali pelatihan Bahasa Inggris yang berdampak pada peningkatan kompetensi GTK sesuai level CEFR yang ditargetkan.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="bil-rhythm" class="tab-panel">
+    <div class="rhythm-wrap">
+      <div class="rhythm-hdr">
+        <h3>Ritme Kerja Unit — Bilingual</h3>
+        <div class="legend">
+          <div class="leg-item"><div class="leg-dot" style="background:#2E7D32"></div>Tanggung jawab Unit</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#bf360c"></div>Bersama EQA Manager</div>
+        </div>
+      </div>
+      <div class="lane"><div class="freq-lbl"><div class="freq-pulse" style="background:#C62828"></div><div class="freq-name" style="color:#C62828">Harian</div></div><div class="pills"><div class="pill pill-u"><div class="pill-dot" style="background:#2E7D32"></div>Bilingual Daily Journal</div></div></div>
+      <div class="lane"><div class="freq-lbl"><div class="freq-pulse" style="background:#E65100"></div><div class="freq-name" style="color:#E65100">Mingguan</div></div><div class="pills"><div class="pill pill-u"><div class="pill-dot" style="background:#2E7D32"></div>English Improvement Session</div></div></div>
+      <div class="lane">
+        <div class="freq-lbl"><div class="freq-pulse" style="background:var(--lg)"></div><div class="freq-name" style="color:var(--lg)">Bulanan</div></div>
+        <div class="pills"><div class="pill pill-u"><div class="pill-dot" style="background:#2E7D32"></div>Rekapitulasi &amp; Pelaporan Indeks Konsistensi Bilingual Culture</div></div>
+      </div>
+      <div class="lane">
+        <div class="freq-lbl"><div class="freq-pulse" style="background:var(--bl)"></div><div class="freq-name" style="color:var(--bl)">Semesteral</div></div>
+        <div class="pills">
+          <div class="pill pill-b"><div class="pill-dot" style="background:#bf360c"></div>Pelaksanaan MI-English Proficiency Test</div>
+          <div class="pill pill-b"><div class="pill-dot" style="background:#bf360c"></div>Evaluasi Capaian CEFR GTK</div>
+          <div class="pill pill-b"><div class="pill-dot" style="background:#bf360c"></div>Pelaksanaan Pelatihan Bahasa Inggris Unit</div>
+          <div class="pill pill-u"><div class="pill-dot" style="background:#2E7D32"></div>Pengumpulan Proyek Terapan Pelatihan</div>
+        </div>
+      </div>
+      <div class="lane"><div class="freq-lbl"><div class="freq-pulse" style="background:var(--yw)"></div><div class="freq-name" style="color:var(--yw)">Tahunan</div></div><div class="pills"><div class="pill pill-b"><div class="pill-dot" style="background:#bf360c"></div>Penyusunan Panduan Budaya Bilingual Unit</div></div></div>
+      <div class="lane"><div class="freq-lbl"><div class="freq-pulse" style="background:#ddd"></div><div class="freq-name">Kondisional</div></div><div class="lane-empty">Tidak ada kegiatan kondisional di area ini</div></div>
+    </div>
+  </div>
+
+  <div id="bil-handoff" class="tab-panel">
+    <div class="handoff-wrap">
+      <div class="handoff-hdr"><h3>Alur Handoff — EQA Manager &amp; Unit</h3><p>Dokumen yang mengalir antara EQA Manager dan Unit dalam ekosistem program bilingual.</p></div>
+      <div class="hflow">
+        <div class="hcol hcol-bidang">
+          <h4>EQA Manager → Unit</h4>
+          <div class="hdoc"><div class="hdoc-name">Bilingual Guidebook</div><div class="hdoc-desc">Standar Budaya Bilingual Arab–Inggris. Acuan utama penyusunan Panduan Bilingual Unit masing-masing.</div><span class="hdoc-freq">Tahunan</span></div>
+          <div class="hdoc"><div class="hdoc-name">Instrumen MI-EPT</div><div class="hdoc-desc">Tes profisiensi bahasa Inggris terstandarisasi dan terpetakan pada level CEFR untuk seluruh GTK.</div><span class="hdoc-freq">Tahunan</span></div>
+          <div class="hdoc"><div class="hdoc-name">Silabus Pelatihan Bahasa Inggris</div><div class="hdoc-desc">Silabus terdiferensiasi berdasarkan level CEFR, sebagai acuan pelaksanaan dan pengelompokan peserta.</div><span class="hdoc-freq">Tahunan</span></div>
+          <div class="hdoc"><div class="hdoc-name">Rapor Profisiensi Bahasa Inggris GTK</div><div class="hdoc-desc">Rapor individual memuat skor CEFR, tren perkembangan, dan rekomendasi pengembangan. Diserahkan pasca setiap EPT.</div><span class="hdoc-freq">Semesteral</span></div>
+        </div>
+        <div class="harrow">⇄</div>
+        <div class="hcol hcol-unit">
+          <h4>Unit → EQA Manager</h4>
+          <div class="hdoc"><div class="hdoc-name">Panduan Budaya Bilingual Unit</div><div class="hdoc-desc">Panduan khas unit mengacu pada Bilingual Guidebook, mencerminkan konteks dan karakter unit.</div><span class="hdoc-freq">Tahunan</span></div>
+          <div class="hdoc"><div class="hdoc-name">Bilingual Daily Journal (agregat bulanan)</div><div class="hdoc-desc">Rekap bulanan dari jurnal harian sebagai dasar penghitungan Indeks Konsistensi Bilingual Culture.</div><span class="hdoc-freq">Bulanan</span></div>
+          <div class="hdoc"><div class="hdoc-name">Indeks Konsistensi Bilingual Culture</div><div class="hdoc-desc">Skor konsistensi pelaksanaan Bilingual Culture per unit, dilaporkan setiap bulan ke EQA Manager.</div><span class="hdoc-freq">Bulanan</span></div>
+          <div class="hdoc"><div class="hdoc-name">Proyek Terapan Pelatihan</div><div class="hdoc-desc">Karya terapan peserta pelatihan bahasa Inggris sebagai bukti aplikasi materi pelatihan.</div><span class="hdoc-freq">Semesteral</span></div>
+        </div>
+      </div>
+      <div class="joins">
+        <h4>EQA Manager turun langsung — kegiatan bersama</h4>
+        <div class="join-grid">
+          <div class="join-item"><div><div class="join-name">Penyusunan Panduan Budaya Bilingual Unit</div><span class="join-freq">Tahunan — EQA Manager mendampingi dan mengesahkan</span></div></div>
+          <div class="join-item"><div><div class="join-name">Pelaksanaan MI-English Proficiency Test</div><span class="join-freq">Semesteral — EQA Manager mengelola pelaksanaan &amp; pengoreksian</span></div></div>
+          <div class="join-item"><div><div class="join-name">Evaluasi Capaian CEFR GTK</div><span class="join-freq">Semesteral — EQA Manager menganalisis &amp; menyusun Rapor Profisiensi</span></div></div>
+          <div class="join-item"><div><div class="join-name">Pelaksanaan Pelatihan Bahasa Inggris Unit</div><span class="join-freq">Semesteral — EQA Manager menyiapkan ToT &amp; silabus</span></div></div>
+          <div class="join-item"><div><div class="join-name">Supervisi Keterlaksanaan Bilingual Culture</div><span class="join-freq">Semesteral — EQA Manager observasi &amp; verifikasi konsistensi</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="bil-check" class="tab-panel">
+    <div class="chk-wrap" style="box-shadow: none; border: 1px solid #e0dbd0;">
+      <div class="chk-hdr">
+        <h3>On-Track Check — Bilingual</h3>
+        <p>Poin evaluasi implementasi. Untuk mengisi dan menyimpan data evaluasi unit secara aktual, silakan gunakan fitur <strong>Unit Monitoring</strong> di Executive View.</p>
+      </div>
+      <button class="chk-btn chk-btn-primary" style="margin-bottom: 1.5rem;" onclick="goToMonitoring()">Buka Unit Monitoring ➔</button>
+
+      <!-- READ-ONLY REFERENCE LIST -->
+      <div id="readonly-bil-list">
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">Bilingual Guidebook dan Panduan Budaya Bilingual Unit sudah diterima dan tersedia di unit</div></div>
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">Bilingual Daily Journal diisi setiap hari sekolah — bukan diisi mundur di akhir minggu</div></div>
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">English Improvement Session terlaksana setiap minggu dengan kehadiran GTK yang konsisten</div></div>
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">Indeks Konsistensi Bilingual Culture dihitung dan dilaporkan ke EQA Manager setiap bulan</div></div>
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">Seluruh GTK sudah mengikuti MI-EPT di siklus terakhir — tidak ada yang absen</div></div>
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">Rapor Profisiensi Bahasa Inggris GTK sudah diterima dari EQA Manager dan digunakan sebagai dasar pengelompokan pelatihan</div></div>
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">Pelatihan Bahasa Inggris minimal 1 sesi sudah terlaksana semester ini dengan durasi min. 180 menit</div></div>
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">Proyek Terapan Pelatihan sudah dikumpulkan dan diarsipkan oleh koordinator unit</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── KELAS INTERNASIONAL ───────────────────────────────────────────── -->
+<section id="sec-int" class="section">
+  <div class="area-hdr">
+    <div class="area-hdr-top">
+      <div class="ac-icon" style="background:#fff8e1; color:#b7791f;">🎓</div>
+      <h2>Kelas Internasional</h2>
+    </div>
+    <div class="area-hdr-meta">OKR 1.10.1 · 1.10.2 — Program khusus SMA</div>
+  </div>
+
+  <div class="tab-group">
+    <div class="tab-btn active" onclick="tab(this,'int-what')">Apa Ini?</div>
+    <div class="tab-btn" onclick="tab(this,'int-rhythm')">Ritme Kerja</div>
+    <div class="tab-btn" onclick="tab(this,'int-handoff')">Handoff EQA Manager–Unit</div>
+    <div class="tab-btn" onclick="tab(this,'int-check')">On-Track Check</div>
+  </div>
+
+  <div id="int-what" class="tab-panel active">
+    <div class="card">
+      <div class="card-title">Program Kelas Internasional</div>
+      <p>Bersama-sama, kita akan membekali murid SMA agar siap bersaing di kancah global. Kita tidak akan mengganti kurikulum nasional, namun kita akan memperkayanya dengan mengintegrasikan standar internasional—mulai dari pemanfaatan sumber belajar Cambridge, simulasi past papers, hingga bimbingan persiapan tes universitas luar negeri.</p>
+      <p>Sebagai kompas pergerakan kita, ada dua pencapaian yang akan kita tuju bersama: terlaksananya <strong>80% program kelas internasional sesuai pedoman</strong>, dan keberhasilan mengantarkan <strong>minimal 2 murid</strong> menerima LoA dari universitas luar negeri dalam satu tahun ajaran.</p>
+      <div class="mandate">
+        <label>Komitmen Bersama Kita (Khusus SMA)</label>
+        <p>Unit SMA akan menjadi motor penggerak utama dalam program ini. Tim EQA akan senantiasa hadir sebagai <em>pendamping dan verifikator standar</em> untuk memastikan keselarasan arah. Penyusunan dokumen program, panduan pendaftaran, hingga pemetaan jurusan akan menjadi ruang kreasi unit yang kita kawal bersama.</p>
+      </div>
+      <div class="okr-grid">
+        <div class="okr-item"><div class="okr-code">OKR 1.10.1</div><p>80% program kelas internasional terlaksana sesuai target dan berkontribusi pada peningkatan kesiapan murid menghadapi standar akademik internasional.</p></div>
+        <div class="okr-item"><div class="okr-code">OKR 1.10.2</div><p>Minimal 2 murid kelas internasional menerima Letter of Acceptance (LoA) dari universitas luar negeri dalam satu tahun ajaran.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="int-rhythm" class="tab-panel">
+    <div class="rhythm-wrap">
+      <div class="rhythm-hdr">
+        <h3>Ritme Kerja Unit — Kelas Internasional</h3>
+        <div class="legend">
+          <div class="leg-item"><div class="leg-dot" style="background:#2E7D32"></div>Tanggung jawab Unit</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#bf360c"></div>Bersama EQA Manager</div>
+        </div>
+      </div>
+      <div class="lane"><div class="freq-lbl"><div class="freq-pulse" style="background:#ddd"></div><div class="freq-name">Harian</div></div><div class="lane-empty">Tidak ada kegiatan harian</div></div>
+      <div class="lane"><div class="freq-lbl"><div class="freq-pulse" style="background:#ddd"></div><div class="freq-name">Mingguan</div></div><div class="lane-empty">Tidak ada kegiatan mingguan</div></div>
+      <div class="lane"><div class="freq-lbl"><div class="freq-pulse" style="background:var(--lg)"></div><div class="freq-name" style="color:var(--lg)">Bulanan</div></div><div class="pills"><div class="pill pill-u"><div class="pill-dot" style="background:#2E7D32"></div>Penyusunan Monthly Progress Report Kelas Internasional</div></div></div>
+      <div class="lane">
+        <div class="freq-lbl"><div class="freq-pulse" style="background:var(--bl)"></div><div class="freq-name" style="color:var(--bl)">Semesteral</div></div>
+        <div class="pills">
+          <div class="pill pill-b"><div class="pill-dot" style="background:#bf360c"></div>Simulasi Past Papers Mata Pelajaran Internasional</div>
+          <div class="pill pill-b"><div class="pill-dot" style="background:#bf360c"></div>Pelaksanaan Program Persiapan University Required Test</div>
+        </div>
+      </div>
+      <div class="lane">
+        <div class="freq-lbl"><div class="freq-pulse" style="background:var(--yw)"></div><div class="freq-name" style="color:var(--yw)">Tahunan</div></div>
+        <div class="pills">
+          <div class="pill pill-u"><div class="pill-dot" style="background:#2E7D32"></div>Penyusunan Dokumen Program Kelas Internasional</div>
+          <div class="pill pill-u"><div class="pill-dot" style="background:#2E7D32"></div>Penyusunan Panduan Pendaftaran Universitas LN</div>
+          <div class="pill pill-u"><div class="pill-dot" style="background:#2E7D32"></div>Penyusunan Peta Jurusan &amp; Daftar Universitas Murid</div>
+          <div class="pill pill-u"><div class="pill-dot" style="background:#2E7D32"></div>Pendampingan Proses Pendaftaran Universitas LN</div>
+          <div class="pill pill-u"><div class="pill-dot" style="background:#2E7D32"></div>Pengarsipan &amp; Pelaporan LoA Murid</div>
+        </div>
+      </div>
+      <div class="lane"><div class="freq-lbl"><div class="freq-pulse" style="background:#ddd"></div><div class="freq-name">Kondisional</div></div><div class="lane-empty">Tidak ada kegiatan kondisional di area ini</div></div>
+    </div>
+  </div>
+
+  <div id="int-handoff" class="tab-panel">
+    <div class="handoff-wrap">
+      <div class="handoff-hdr"><h3>Alur Handoff — EQA Manager &amp; Unit</h3><p>Di area ini unit (SMA) adalah penghasil dokumen utama. EQA Manager berperan sebagai verifikator dan pendamping standar.</p></div>
+      <div class="hflow">
+        <div class="hcol hcol-bidang">
+          <h4>EQA Manager → Unit</h4>
+          <div class="hdoc"><div class="hdoc-name">Verifikasi Dokumen Program International Class</div><div class="hdoc-desc">EQA Manager memverifikasi dokumen program yang disusun unit sebelum program dimulai.</div><span class="hdoc-freq">Tahunan</span></div>
+          <div class="hdoc"><div class="hdoc-name">Verifikasi Panduan Pendaftaran Universitas LN</div><div class="hdoc-desc">EQA Manager memverifikasi panduan pendaftaran yang disusun unit — memastikan alur Early dan Late Intake benar.</div><span class="hdoc-freq">Tahunan</span></div>
+          <div class="hdoc"><div class="hdoc-name">Verifikasi Kesiapan Pendaftaran Murid</div><div class="hdoc-desc">EQA Manager memverifikasi peta jurusan dan daftar universitas setiap murid sebelum pendaftaran dimulai.</div><span class="hdoc-freq">Tahunan</span></div>
+        </div>
+        <div class="harrow">⇄</div>
+        <div class="hcol hcol-unit">
+          <h4>Unit → EQA Manager</h4>
+          <div class="hdoc"><div class="hdoc-name">Dokumen Program Reworked International Class</div><div class="hdoc-desc">Dokumen lengkap disusun SMA — memuat struktur kurikulum, sumber belajar, dan jalur persiapan tes internasional.</div><span class="hdoc-freq">Tahunan</span></div>
+          <div class="hdoc"><div class="hdoc-name">Panduan Pendaftaran Universitas Luar Negeri</div><div class="hdoc-desc">Panduan memuat alur Early dan Late Intake, daftar dokumen, dan tenggat waktu kritis.</div><span class="hdoc-freq">Tahunan</span></div>
+          <div class="hdoc"><div class="hdoc-name">Peta Jurusan &amp; Daftar Universitas Murid</div><div class="hdoc-desc">Peta pilihan studi masing-masing murid beserta daftar min. 5 universitas eligible.</div><span class="hdoc-freq">Tahunan</span></div>
+          <div class="hdoc"><div class="hdoc-name">Monthly Progress Report Kelas Internasional</div><div class="hdoc-desc">Laporan progres bulanan pelaksanaan program — dasar evaluasi dan penyesuaian berkala.</div><span class="hdoc-freq">Bulanan</span></div>
+          <div class="hdoc"><div class="hdoc-name">LoA Murid (scan)</div><div class="hdoc-desc">Scan Letter of Acceptance dari universitas luar negeri, terdokumentasi di Drive sekolah.</div><span class="hdoc-freq">Kondisional</span></div>
+        </div>
+      </div>
+      <div class="joins">
+        <h4>EQA Manager turun langsung — kegiatan bersama</h4>
+        <div class="join-grid">
+          <div class="join-item"><div><div class="join-name">Simulasi Past Papers Mata Pelajaran Internasional</div><span class="join-freq">Semesteral — EQA Manager mendukung pelaksanaan &amp; evaluasi</span></div></div>
+          <div class="join-item"><div><div class="join-name">Program Persiapan University Required Test</div><span class="join-freq">Semesteral — EQA Manager membantu penentuan jalur tes</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="int-check" class="tab-panel">
+    <div class="chk-wrap" style="box-shadow: none; border: 1px solid #e0dbd0;">
+      <div class="chk-hdr">
+        <h3>On-Track Check — Kelas Internasional</h3>
+        <p>Poin evaluasi implementasi. Untuk mengisi dan menyimpan data evaluasi unit secara aktual, silakan gunakan fitur <strong>Unit Monitoring</strong> di Executive View.</p>
+      </div>
+      <button class="chk-btn chk-btn-primary" style="margin-bottom: 1.5rem;" onclick="goToMonitoring()">Buka Unit Monitoring ➔</button>
+
+      <!-- READ-ONLY REFERENCE LIST -->
+      <div id="readonly-int-list">
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">Dokumen Program Reworked International Class sudah disusun dan terverifikasi oleh EQA Manager</div></div>
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">Monthly Progress Report dibuat setiap bulan tanpa jeda sejak program berjalan</div></div>
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">Simulasi past papers sudah dilaksanakan minimal 1 kali semester ini untuk semua mata pelajaran internasional</div></div>
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">Setiap murid kelas internasional sudah memiliki peta jurusan dan daftar minimal 5 universitas yang eligible</div></div>
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">Panduan Pendaftaran Universitas Luar Negeri sudah tersedia, mencakup alur Early dan Late Intake, dan sudah diverifikasi EQA Manager</div></div>
+        <div class="chk-item readonly"><div class="chk-box"></div><div class="chk-text">Proses pendampingan pendaftaran murid sudah berjalan sesuai jadwal dan tenggat waktu yang ditetapkan</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── KOLABORASI INTERNASIONAL ──────────────────────────────────────── -->
+<section id="sec-kol" class="section">
+  <div class="area-hdr">
+    <div class="area-hdr-top">
+      <div class="ac-icon" style="background:#fce4ec; color:#880e4f;">🤝</div>
+      <h2>Kolaborasi Internasional</h2>
+    </div>
+    <div class="area-hdr-meta">OKR 4.1.1 — Program bersifat kondisional</div>
+  </div>
+
+  <div class="tab-group">
+    <div class="tab-btn active" onclick="tab(this,'kol-what')">Apa Ini?</div>
+    <div class="tab-btn" onclick="tab(this,'kol-rhythm')">Ritme Kerja</div>
+    <div class="tab-btn" onclick="tab(this,'kol-handoff')">Handoff EQA Manager–Unit</div>
+    <div class="tab-btn" onclick="tab(this,'kol-check')">On-Track Check</div>
+  </div>
+
+  <div id="kol-what" class="tab-panel active">
+    <div class="card">
+      <div class="card-title">Program Kolaborasi Internasional</div>
+      <p>Ruang ini dirancang sebagai panduan kita untuk memperluas cakrawala sekolah. Kita akan merajut dan merawat hubungan kerjasama akademik dengan lembaga pendidikan di luar negeri yang memberikan dampak langsung pada pengembangan murid dan guru—dengan fokus murni pada sinergi edukasi.</p>
+      <p>Nilai utama dari kolaborasi ini adalah pertukaran wawasan, peningkatan kapasitas guru, kunjungan edukatif, program bersama, serta riset. Jika sebuah peluang kemitraan lebih mengarah pada transaksi finansial murni, kita akan dengan senang hati bersinergi dan mengarahkannya ke Divisi Bisnis.</p>
+      <div class="mandate">
+        <label>Komitmen Bersama Kita</label>
+        <p>Kini, setiap unit memiliki kemerdekaan penuh untuk menjalin kemitraan internasional secara <em>mandiri</em>. Mari berekspansi dengan menjadikan Kerangka Kerjasama Internasional sebagai kompas gerak kita, dan pastikan kita saling berbagi cerita melalui pelaporan setiap kali program sukses terlaksana.</p>
+      </div>
+      <div class="okr-grid">
+        <div class="okr-item"><div class="okr-code">OKR 4.1.1</div><p>Terjalinnya minimal 4 kerjasama akademik dengan Lembaga atau Tokoh Pendidikan Luar Negeri yang berdampak langsung pada pengembangan guru dan murid.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="kol-rhythm" class="tab-panel">
+    <div class="rhythm-wrap">
+      <div class="rhythm-hdr">
+        <h3>Ritme Kerja Unit — Kolaborasi Internasional</h3>
+        <div class="legend">
+          <div class="leg-item"><div class="leg-dot" style="background:#2E7D32"></div>Tanggung jawab Unit</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#bf360c"></div>Bersama EQA Manager</div>
+        </div>
+      </div>
+      <div class="lane"><div class="freq-lbl"><div class="freq-pulse" style="background:#ddd"></div><div class="freq-name">Harian</div></div><div class="lane-empty">Tidak ada</div></div>
+      <div class="lane"><div class="freq-lbl"><div class="freq-pulse" style="background:#ddd"></div><div class="freq-name">Mingguan</div></div><div class="lane-empty">Tidak ada</div></div>
+      <div class="lane"><div class="freq-lbl"><div class="freq-pulse" style="background:#ddd"></div><div class="freq-name">Bulanan</div></div><div class="lane-empty">Tidak ada kegiatan bulanan dari unit — EQA Manager mengelola pemeliharaan relasi internasional secara internal</div></div>
+      <div class="lane"><div class="freq-lbl"><div class="freq-pulse" style="background:#ddd"></div><div class="freq-name">Semesteral</div></div><div class="lane-empty">Tidak ada</div></div>
+      <div class="lane"><div class="freq-lbl"><div class="freq-pulse" style="background:var(--yw)"></div><div class="freq-name" style="color:var(--yw)">Tahunan</div></div><div class="lane-empty">Sosialisasi Kerangka Kerjasama Internasional dilakukan oleh EQA Manager ke unit di awal tahun ajaran</div></div>
+      <div class="lane">
+        <div class="freq-lbl"><div class="freq-pulse" style="background:var(--pk)"></div><div class="freq-name" style="color:var(--pk)">Kondisional</div></div>
+        <div class="pills">
+          <div class="pill pill-u"><div class="pill-dot" style="background:#2E7D32"></div>Pelaksanaan Program Kolaborasi Internasional Unit</div>
+          <div class="pill pill-u"><div class="pill-dot" style="background:#2E7D32"></div>Pelaporan Program Kolaborasi Internasional Unit</div>
+        </div>
+      </div>
+      <div class="cond-note"><p><strong>Tentang "Kondisional":</strong> Kegiatan ini tidak terjadwal tetap — terjadi ketika ada peluang kerjasama yang muncul. Unit tidak perlu menunggu instruksi EQA Manager. Jika ada peluang yang sesuai dengan Kerangka Kerjasama Internasional, unit bisa langsung bergerak dan melaporkannya setelah terlaksana.</p></div>
+    </div>
+  </div>
+
+  <div id="kol-handoff" class="tab-panel">
+    <div class="handoff-wrap">
+      <div class="handoff-hdr"><h3>Alur Handoff — EQA Manager &amp; Unit</h3><p>Area ini memiliki alur handoff yang sederhana. EQA Manager menetapkan kerangka; unit bergerak di dalamnya dan melapor.</p></div>
+      <div class="hflow">
+        <div class="hcol hcol-bidang">
+          <h4>EQA Manager → Unit</h4>
+          <div class="hdoc"><div class="hdoc-name">Kerangka Kerjasama Internasional</div><div class="hdoc-desc">Dokumen yang mendefinisikan apa yang dimaksud kolaborasi akademik, bentuk-bentuk kerjasama yang diperbolehkan, dan yang dikecualikan (murni bisnis). Ini adalah panduan operasional unit untuk bertindak mandiri.</div><span class="hdoc-freq">Tahunan — Sosialisasi awal tahun ajaran</span></div>
+        </div>
+        <div class="harrow">⇄</div>
+        <div class="hcol hcol-unit">
+          <h4>Unit → EQA Manager</h4>
+          <div class="hdoc"><div class="hdoc-name">Laporan Program Kolaborasi Internasional Unit</div><div class="hdoc-desc">Dokumentasi program kolaborasi yang sudah terlaksana — apa yang dilakukan, siapa yang terlibat, dan apa dampaknya bagi guru atau murid di unit.</div><span class="hdoc-freq">Kondisional — setelah setiap kegiatan terlaksana</span></div>
+        </div>
+      </div>
+      <div class="joins">
+        <h4>Lingkup kolaborasi yang berlaku di area ini</h4>
+        <div class="scope-grid">
+          <div class="scope-box scope-box-ok">
+            <span class="scope-lbl scope-lbl-ok">✓ Termasuk dalam lingkup ini</span>
+            <ul>
+              <li>Pertukaran pengetahuan dan pengalaman</li>
+              <li>Pengembangan kapasitas guru</li>
+              <li>Kunjungan belajar (inbound maupun outbound)</li>
+              <li>Joint program akademik</li>
+              <li>Riset atau penelitian bersama</li>
+            </ul>
+          </div>
+          <div class="scope-box scope-box-no">
+            <span class="scope-lbl scope-lbl-no">✗ Di luar lingkup ini</span>
+            <ul>
+              <li>Kerjasama yang bersifat murni finansial</li>
+              <li>Transaksi pertukaran material atau produk</li>
+              <li>Kerjasama bisnis → domain Divisi Bisnis</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="kol-check" class="tab-panel">
+    <div class="chk-wrap" style="box-shadow: none; border: 1px solid #e0dbd0;">
+      <div class="chk-hdr">
+        <h3>On-Track Check — Kolaborasi Internasional</h3>
+        <p>Program ini bersifat kondisional dan tidak terjadwal tetap. Poin di bawah adalah <strong>rekomendasi</strong> — hal-hal yang baik untuk dipertimbangkan unit, bukan kewajiban rutin. Untuk mencatat progres secara aktual, gunakan fitur <strong>Unit Monitoring</strong> di Executive View.</p>
+      </div>
+      <button class="chk-btn chk-btn-primary" style="margin-bottom: 1.5rem;" onclick="goToMonitoring()">Buka Unit Monitoring ➔</button>
+
+      <!-- READ-ONLY REFERENCE LIST -->
+      <div class="rec-header">💡 Rekomendasi — bukan checklist wajib</div>
+      <div id="readonly-kol-list">
+        <div class="chk-item readonly is-rec"><div class="chk-box"></div><div class="chk-text">Sebaiknya: Kerangka Kerjasama Internasional dari EQA Manager sudah dibaca dan dipahami oleh manajemen unit</div></div>
+        <div class="chk-item readonly is-rec"><div class="chk-box"></div><div class="chk-text">Sebaiknya: Unit memahami perbedaan antara kolaborasi akademik (lingkup area ini) dan kolaborasi bisnis (Divisi Bisnis)</div></div>
+        <div class="chk-item readonly is-rec"><div class="chk-box"></div><div class="chk-text">Jika sudah ada program kolaborasi terlaksana — akan lebih baik jika laporan dikirimkan ke EQA Manager</div></div>
+        <div class="chk-item readonly is-rec"><div class="chk-box"></div><div class="chk-text">Akan membantu jika setiap peluang kerjasama yang masuk diidentifikasi lebih dulu — akademik atau bisnis — sebelum direspons</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── EXECUTIVE DASHBOARD SECTION ─────────────────────────────────────────── -->
+<section id="sec-exec" class="section">
+  <div class="area-hdr">
+    <div class="area-hdr-top">
+      <div class="ac-icon" style="background:#e2e8f0;color:#334155;">📊</div>
+      <h2>Executive View</h2>
+    </div>
+    <div class="area-hdr-meta">Ringkasan performa dan pengisian data monitoring (On-Track Check) unit.</div>
+  </div>
+
+  <!-- EXECUTIVE TABS -->
+  <div class="tab-group">
+    <div class="tab-btn active" onclick="tab(this,'exec-overview')">Ringkasan Eksekutif</div>
+    <div class="tab-btn" onclick="tab(this,'exec-monitoring')">Unit Monitoring</div>
+  </div>
+
+  <!-- EXECUTIVE OVERVIEW TAB -->
+  <div id="exec-overview" class="tab-panel active">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+      <!-- Perpustakaan -->
+      <div style="background: var(--wh); border-radius: var(--radius); padding: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,.05); border-left: 4px solid #2E7D32;">
+        <div style="font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 1rem;">📚 Perpustakaan</div>
+        <div style="font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 700; color: var(--dk); line-height: 1; margin-bottom: .5rem;" id="exec-perp-pct">0%</div>
+        <div style="height: 6px; background: #ede9e0; border-radius: 3px; overflow: hidden; margin-bottom: .5rem;">
+          <div id="exec-perp-fill" style="height: 100%; border-radius: 3px; background: #2E7D32; transition: width .4s ease;"></div>
+        </div>
+        <div style="font-size: .75rem; color: var(--muted);" id="exec-perp-detail">0 / 9 unit on track</div>
+      </div>
+      <!-- Bilingual -->
+      <div style="background: var(--wh); border-radius: var(--radius); padding: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,.05); border-left: 4px solid var(--bl);">
+        <div style="font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 1rem;">🌐 Bilingual</div>
+        <div style="font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 700; color: var(--dk); line-height: 1; margin-bottom: .5rem;" id="exec-bil-pct">0%</div>
+        <div style="height: 6px; background: #ede9e0; border-radius: 3px; overflow: hidden; margin-bottom: .5rem;">
+          <div id="exec-bil-fill" style="height: 100%; border-radius: 3px; background: var(--bl); transition: width .4s ease;"></div>
+        </div>
+        <div style="font-size: .75rem; color: var(--muted);" id="exec-bil-detail">0 / 9 unit on track</div>
+      </div>
+      <!-- Int'l Class -->
+      <div style="background: var(--wh); border-radius: var(--radius); padding: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,.05); border-left: 4px solid var(--yw);">
+        <div style="font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 1rem;">🎓 Kelas Int'l</div>
+        <div style="font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 700; color: var(--dk); line-height: 1; margin-bottom: .5rem;" id="exec-int-pct">0%</div>
+        <div style="height: 6px; background: #ede9e0; border-radius: 3px; overflow: hidden; margin-bottom: .5rem;">
+          <div id="exec-int-fill" style="height: 100%; border-radius: 3px; background: var(--yw); transition: width .4s ease;"></div>
+        </div>
+        <div style="font-size: .75rem; color: var(--muted);" id="exec-int-detail">0 / 2 unit on track</div>
+      </div>
+      <!-- Kolaborasi -->
+      <div style="background: var(--wh); border-radius: var(--radius); padding: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,.05); border-left: 4px solid var(--pk);">
+        <div style="font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 1rem;">🤝 Kolaborasi</div>
+        <div style="font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 700; color: var(--dk); line-height: 1; margin-bottom: .5rem;" id="exec-kol-pct">0%</div>
+        <div style="height: 6px; background: #ede9e0; border-radius: 3px; overflow: hidden; margin-bottom: .5rem;">
+          <div id="exec-kol-fill" style="height: 100%; border-radius: 3px; background: var(--pk); transition: width .4s ease;"></div>
+        </div>
+        <div style="font-size: .75rem; color: var(--muted);" id="exec-kol-detail">0 / 9 unit telah memahami kerangka kerjasama</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="padding-bottom: 1rem; border-bottom: 1px solid #f0ece3; margin-bottom: 1.5rem;">Breakdown per Unit</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;" id="unit-breakdown">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- UNIT MONITORING TAB (The Checklists) -->
+  <div id="exec-monitoring" class="tab-panel">
+    <div class="card">
+      <div class="card-title">Pusat Monitoring Unit</div>
+      <p>Pilih unit yang sedang Anda evaluasi. Semua perubahan checklist di sini akan otomatis tersimpan dan terakumulasi ke dalam Ringkasan Eksekutif.</p>
+      
+      <!-- Master Dropdown -->
+      <div class="exec-unit-select">
+        <label>Unit yang Dikunjungi:</label>
+        <select id="master-unit" style="padding: .6rem 1rem; border: 1px solid #d0ccc5; border-radius: 8px; font-size: .9rem; font-family: 'DM Sans', sans-serif; color: var(--dk); font-weight: 600; outline: none; min-width: 250px;">
+          <option value="">← Pilih Unit</option>
+          <option value="MIWK">MIWK (PAUD-TK)</option>
+          <option value="SDK">SDK</option>
+          <option value="SDJ">SDJ</option>
+          <option value="MIT">MIT</option>
+          <option value="SMPK">SMPK</option>
+          <option value="Azhari">Azhari</option>
+          <option value="SMPJ">SMPJ</option>
+          <option value="SMAK">SMAK</option>
+          <option value="SMAJ">SMAJ</option>
+        </select>
+        <span style="font-size: .75rem; color: var(--muted); margin-left: 1rem;" id="master-unit-status">Pilih unit untuk menampilkan instrumen evaluasi.</span>
+      </div>
+
+      <!-- Container for all checklists (Hidden until unit is selected) -->
+      <div id="monitoring-checklists" style="display: none; flex-direction: column; gap: 2rem;">
+        
+        <!-- Checklist Perpustakaan -->
+        <div class="chk-wrap" style="box-shadow: none; border: 1px solid #e0dbd0; padding: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-family:'Cormorant Garamond',serif; font-size: 1.4rem; font-weight: 600; color: #2E7D32;">📚 Perpustakaan & Literasi</h3>
+            <button class="chk-btn chk-btn-reset" onclick="resetChecklist('perp')">Reset Area</button>
+          </div>
+          <div class="prog-bar"><div class="prog-fill" id="perp-fill" style="width:0; background: #2E7D32;"></div></div>
+          <div class="prog-label" id="perp-lbl">0 / 7 terpenuhi</div>
+          <div id="perp-list">
+            <div class="chk-item interactive" onclick="chk(this,'perp',7)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Panduan Induk Perpustakaan &amp; Literasi sudah diterima dari EQA Manager dan disosialisasikan ke staf perpustakaan</div></div>
+            <div class="chk-item interactive" onclick="chk(this,'perp',7)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Analisis instrumen akreditasi sudah selesai — peta kelayakan komponen tersedia dan diserahkan ke EQA Manager</div></div>
+            <div class="chk-item interactive" onclick="chk(this,'perp',7)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Rencana aksi pemenuhan akreditasi sudah disusun bersama EQA Manager dan mencakup minimal 50% komponen</div></div>
+            <div class="chk-item interactive" onclick="chk(this,'perp',7)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Data kunjungan dan peminjaman perpustakaan dicatat dan dilaporkan ke EQA Manager setiap bulan tanpa jeda</div></div>
+            <div class="chk-item interactive" onclick="chk(this,'perp',7)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Progres rencana aksi pemenuhan akreditasi dilaporkan ke EQA Manager setiap bulan</div></div>
+            <div class="chk-item interactive" onclick="chk(this,'perp',7)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Pengadaan buku tahun ini sudah mencapai minimal 100 judul baru sesuai komposisi kategori dalam panduan</div></div>
+            <div class="chk-item interactive" onclick="chk(this,'perp',7)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Seluruh buku baru sudah terkatalogisasi dan tersedia untuk dipinjam murid dan guru</div></div>
+          </div>
+          <div class="chk-saved-note" id="perp-saved"></div>
+        </div>
+
+        <!-- Checklist Bilingual -->
+        <div class="chk-wrap" style="box-shadow: none; border: 1px solid #e0dbd0; padding: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-family:'Cormorant Garamond',serif; font-size: 1.4rem; font-weight: 600; color: var(--bl);">🌐 Bilingual Revitalization</h3>
+            <button class="chk-btn chk-btn-reset" onclick="resetChecklist('bil')">Reset Area</button>
+          </div>
+          <div class="prog-bar"><div class="prog-fill" id="bil-fill" style="width:0; background: var(--bl);"></div></div>
+          <div class="prog-label" id="bil-lbl">0 / 8 terpenuhi</div>
+          <div id="bil-list">
+            <div class="chk-item interactive" onclick="chk(this,'bil',8)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Bilingual Guidebook dan Panduan Budaya Bilingual Unit sudah diterima dan tersedia di unit</div></div>
+            <div class="chk-item interactive" onclick="chk(this,'bil',8)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Bilingual Daily Journal diisi setiap hari sekolah — bukan diisi mundur di akhir minggu</div></div>
+            <div class="chk-item interactive" onclick="chk(this,'bil',8)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">English Improvement Session terlaksana setiap minggu dengan kehadiran GTK yang konsisten</div></div>
+            <div class="chk-item interactive" onclick="chk(this,'bil',8)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Indeks Konsistensi Bilingual Culture dihitung dan dilaporkan ke EQA Manager setiap bulan</div></div>
+            <div class="chk-item interactive" onclick="chk(this,'bil',8)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Seluruh GTK sudah mengikuti MI-EPT di siklus terakhir — tidak ada yang absen</div></div>
+            <div class="chk-item interactive" onclick="chk(this,'bil',8)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Rapor Profisiensi Bahasa Inggris GTK sudah diterima dari EQA Manager dan digunakan sebagai dasar pengelompokan pelatihan</div></div>
+            <div class="chk-item interactive" onclick="chk(this,'bil',8)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Pelatihan Bahasa Inggris minimal 1 sesi sudah terlaksana semester ini dengan durasi min. 180 menit</div></div>
+            <div class="chk-item interactive" onclick="chk(this,'bil',8)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Proyek Terapan Pelatihan sudah dikumpulkan dan diarsipkan oleh koordinator unit</div></div>
+          </div>
+          <div class="chk-saved-note" id="bil-saved"></div>
+        </div>
+
+        <!-- Checklist Kelas Internasional -->
+        <div class="chk-wrap" style="box-shadow: none; border: 1px solid #e0dbd0; padding: 1.5rem;" id="monitoring-int-wrap">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-family:'Cormorant Garamond',serif; font-size: 1.4rem; font-weight: 600; color: var(--yw);">🎓 Kelas Internasional (SMA)</h3>
+            <button class="chk-btn chk-btn-reset" onclick="resetChecklist('int')">Reset Area</button>
+          </div>
+          <div class="prog-bar"><div class="prog-fill" id="int-fill" style="width:0; background: var(--yw);"></div></div>
+          <div class="prog-label" id="int-lbl">0 / 6 terpenuhi</div>
+          <div id="int-list">
+            <div class="chk-item interactive" onclick="chk(this,'int',6)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Dokumen Program Reworked International Class sudah disusun dan terverifikasi oleh EQA Manager</div></div>
+            <div class="chk-item interactive" onclick="chk(this,'int',6)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Monthly Progress Report dibuat setiap bulan tanpa jeda sejak program berjalan</div></div>
+            <div class="chk-item interactive" onclick="chk(this,'int',6)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Simulasi past papers sudah dilaksanakan minimal 1 kali semester ini untuk semua mata pelajaran internasional</div></div>
+            <div class="chk-item interactive" onclick="chk(this,'int',6)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Setiap murid kelas internasional sudah memiliki peta jurusan dan daftar minimal 5 universitas yang eligible</div></div>
+            <div class="chk-item interactive" onclick="chk(this,'int',6)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Panduan Pendaftaran Universitas Luar Negeri sudah tersedia, mencakup alur Early dan Late Intake, dan sudah diverifikasi EQA Manager</div></div>
+            <div class="chk-item interactive" onclick="chk(this,'int',6)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Proses pendampingan pendaftaran murid sudah berjalan sesuai jadwal dan tenggat waktu yang ditetapkan</div></div>
+          </div>
+          <div class="chk-saved-note" id="int-saved"></div>
+        </div>
+
+        <!-- Checklist Kolaborasi -->
+        <div class="chk-wrap" style="box-shadow: none; border: 1px solid #e0dbd0; padding: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-family:'Cormorant Garamond',serif; font-size: 1.4rem; font-weight: 600; color: var(--pk);">🤝 Kolaborasi Internasional</h3>
+            <button class="chk-btn chk-btn-reset" onclick="resetChecklist('kol')">Reset Area</button>
+          </div>
+          <div class="rec-header">💡 Rekomendasi — bukan kewajiban. Program ini bersifat kondisional; daftar ini membantu unit mengenali peluang dan kesiapan, bukan checklist wajib bulanan.</div>
+          <div class="prog-bar"><div class="prog-fill" id="kol-fill" style="width:0; background: var(--pk);"></div></div>
+          <div class="kol-prog-label" id="kol-lbl">0 / 4 hal sudah dipertimbangkan</div>
+          <div id="kol-list">
+            <div class="chk-item interactive is-rec" onclick="chk(this,'kol',4)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Sebaiknya: Kerangka Kerjasama Internasional dari EQA Manager sudah dibaca dan dipahami oleh manajemen unit</div></div>
+            <div class="chk-item interactive is-rec" onclick="chk(this,'kol',4)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Sebaiknya: Unit memahami perbedaan antara kolaborasi akademik (lingkup area ini) dan kolaborasi bisnis (Divisi Bisnis)</div></div>
+            <div class="chk-item interactive is-rec" onclick="chk(this,'kol',4)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Jika sudah ada program kolaborasi terlaksana — akan lebih baik jika laporan dikirimkan ke EQA Manager</div></div>
+            <div class="chk-item interactive is-rec" onclick="chk(this,'kol',4)"><div class="chk-box"><span class="chk-tick">✓</span></div><div class="chk-text">Akan membantu jika setiap peluang kerjasama yang masuk diidentifikasi lebih dulu — akademik atau bisnis — sebelum direspons</div></div>
+          </div>
+          <div class="chk-saved-note" id="kol-saved"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</section>
+
+</main>
+
+<script>
+// --- CONFIG & CONSTANTS ---
+const CHK = {
+  perp: { total: 7, color: '#2E7D32', label: '📚 Perpustakaan' },
+  bil:  { total: 8, color: 'var(--bl)', label: '🌐 Bilingual' },
+  int:  { total: 6, color: 'var(--yw)', label: '🎓 Kelas Int.' },
+  kol:  { total: 4, color: 'var(--pk)', label: '🤝 Kolaborasi' }
+};
+
+const UNITS = ['MIWK', 'SDK', 'SDJ', 'MIT', 'SMPK', 'Azhari', 'SMPJ', 'SMAK', 'SMAJ'];
+
+// --- NAVIGATION ---
+function nav(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+  window.scrollTo(0, 0);
+  
+  if (id === 'exec') updateAverages();
+}
+
+function tab(el, contentId) {
+  const group = el.closest('.tab-group');
+  group.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const section = el.closest('.section');
+  section.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById(contentId);
+  if (target) target.classList.add('active');
+}
+
+function goToMonitoring() {
+  // Jump to exec section
+  nav('exec', document.querySelector('.nav-item:last-child'));
+  // Switch to the monitoring tab
+  const monitorTabBtn = document.querySelectorAll('#sec-exec .tab-btn')[1];
+  if(monitorTabBtn) tab(monitorTabBtn, 'exec-monitoring');
+}
+
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const mn = document.getElementById('main');
+  sb.classList.toggle('collapsed');
+  mn.classList.toggle('expanded');
+  localStorage.setItem('sbCollapsed', sb.classList.contains('collapsed'));
+}
+
+// --- CHECKLIST & DATA LOGIC (V5 Engine Centralized) ---
+function chk(el, prefix, total) {
+  const masterSelect = document.getElementById('master-unit');
+  if (!masterSelect || !masterSelect.value) {
+    alert("Silakan pilih Unit yang dikunjungi terlebih dahulu.");
+    return;
+  }
+  
+  el.classList.toggle('done');
+  updateProgress(prefix, total);
+  saveChecklist(prefix);
+}
+
+function updateProgress(prefix, total) {
+  const list = document.getElementById(prefix + '-list');
+  if (!list) return;
+  const done = list.querySelectorAll('.chk-item.done').length;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  
+  const fill = document.getElementById(prefix + '-fill');
+  const lbl = document.getElementById(prefix + '-lbl');
+  if (fill) fill.style.width = pct + '%';
+  if (lbl) lbl.textContent = done + ' / ' + total + ' terpenuhi';
+}
+
+function saveChecklist(prefix) {
+  const masterSelect = document.getElementById('master-unit');
+  if (!masterSelect || !masterSelect.value) return;
+  
+  const unit = masterSelect.value;
+  const list = document.getElementById(prefix + '-list');
+  const states = [];
+  list.querySelectorAll('.chk-item').forEach(el => states.push(el.classList.contains('done')));
+  
+  const ts = new Date().toLocaleString('id-ID');
+  localStorage.setItem(`chkData_${prefix}_${unit}`, JSON.stringify(states));
+  localStorage.setItem(`chkSaved_${prefix}_${unit}`, ts);
+  
+  const savedEl = document.getElementById(prefix + '-saved');
+  if (savedEl) savedEl.textContent = `Tersimpan Otomatis (${unit}) : ${ts}`;
+  
+  updateAverages(); // Update global averages instantly
+}
+
+function resetChecklist(prefix) {
+  const btn = event.target;
+  const masterSelect = document.getElementById('master-unit');
+  if (!masterSelect || !masterSelect.value) {
+    alert("Silakan pilih Unit yang dikunjungi terlebih dahulu.");
+    return;
+  }
+  
+  if (btn.dataset.confirming) {
+    const unit = masterSelect.value;
+    localStorage.removeItem(`chkData_${prefix}_${unit}`);
+    localStorage.removeItem(`chkSaved_${prefix}_${unit}`);
+    
+    const list = document.getElementById(prefix + '-list');
+    list.querySelectorAll('.chk-item').forEach(el => el.classList.remove('done'));
+    
+    const savedEl = document.getElementById(prefix + '-saved');
+    if (savedEl) savedEl.textContent = '';
+    
+    updateProgress(prefix, CHK[prefix].total);
+    updateAverages();
+    
+    btn.textContent = 'Reset Area';
+    btn.dataset.confirming = '';
+  } else {
+    btn.textContent = 'Klik lagi u/ Konfirmasi';
+    btn.dataset.confirming = '1';
+    setTimeout(() => { btn.textContent = 'Reset Area'; btn.dataset.confirming = ''; }, 3000);
+  }
+}
+
+// Master Dropdown Listener
+document.getElementById('master-unit').addEventListener('change', function() {
+  const unit = this.value;
+  const container = document.getElementById('monitoring-checklists');
+  const statusLbl = document.getElementById('master-unit-status');
+  const intWrap = document.getElementById('monitoring-int-wrap');
+  
+  if (!unit) {
+    container.style.display = 'none';
+    statusLbl.textContent = "Pilih unit untuk menampilkan instrumen evaluasi.";
+    
+    // Clear the active check state to avoid visual bugs
+    for (const prefix of Object.keys(CHK)) {
+      const list = document.getElementById(prefix + '-list');
+      if(list) list.querySelectorAll('.chk-item').forEach(el => el.classList.remove('done'));
+      updateProgress(prefix, CHK[prefix].total);
+      const savedEl = document.getElementById(prefix + '-saved');
+      if (savedEl) savedEl.textContent = '';
+    }
+    return;
+  }
+  
+  statusLbl.textContent = `Mengisi data evaluasi untuk unit: ${unit}`;
+  container.style.display = 'flex';
+  
+  // Show/Hide International Class Checklist based on SMA unit
+  if (intWrap) {
+    intWrap.style.display = (unit === 'SMAK' || unit === 'SMAJ') ? 'block' : 'none';
+  }
+  
+  // Load data for all programs for this unit
+  for (const prefix of Object.keys(CHK)) {
+    const states = JSON.parse(localStorage.getItem(`chkData_${prefix}_${unit}`) || '[]');
+    const list = document.getElementById(prefix + '-list');
+    
+    if (list) {
+      list.querySelectorAll('.chk-item').forEach((el, i) => {
+        if (states[i]) el.classList.add('done');
+        else el.classList.remove('done');
+      });
+    }
+    
+    const savedAt = localStorage.getItem(`chkSaved_${prefix}_${unit}`);
+    const savedEl = document.getElementById(prefix + '-saved');
+    if (savedEl) savedEl.textContent = savedAt ? `Data Terakhir (${unit}): ${savedAt}` : '';
+    
+    updateProgress(prefix, CHK[prefix].total);
+  }
+});
+
+// Compute averages across all units
+function updateAverages() {
+  const summaryData = {};
+
+  for (const prefix of Object.keys(CHK)) {
+    summaryData[prefix] = [];
+    for (const unit of UNITS) {
+      const states = JSON.parse(localStorage.getItem(`chkData_${prefix}_${unit}`) || '[]');
+      const done = states.filter(s => s).length;
+      const pct = CHK[prefix].total > 0 ? Math.round((done / CHK[prefix].total) * 100) : 0;
+      summaryData[prefix].push({ unit, done, pct });
+    }
+  }
+
+  for (const prefix of Object.keys(CHK)) {
+    const targetUnits = prefix === 'int' ? ['SMAK', 'SMAJ'] : UNITS;
+    const relevantData = summaryData[prefix].filter(u => targetUnits.includes(u.unit));
+    const avgPct = Math.round(relevantData.reduce((sum, u) => sum + u.pct, 0) / targetUnits.length) || 0;
+    const onTrackCount = relevantData.filter(u => u.pct >= 50).length;
+    
+    // Overview Tab Home
+    const oFill = document.getElementById(`overview-${prefix}`);
+    const oPct = document.getElementById(`overview-${prefix}-pct`);
+    if (oFill) oFill.style.width = avgPct + '%';
+    if (oPct) oPct.textContent = avgPct + '%';
+    
+    // Executive Tab
+    const eFill = document.getElementById(`exec-${prefix}-fill`);
+    const ePct = document.getElementById(`exec-${prefix}-pct`);
+    const eDetail = document.getElementById(`exec-${prefix}-detail`);
+    if (eFill) eFill.style.width = avgPct + '%';
+    if (ePct) ePct.textContent = avgPct + '%';
+    if (eDetail) {
+      if (prefix === 'kol') {
+        eDetail.textContent = onTrackCount + ' / ' + targetUnits.length + ' unit telah memahami kerangka kerjasama';
+      } else {
+        eDetail.textContent = onTrackCount + ' / ' + targetUnits.length + ' unit on track (>50%)';
+      }
+    }
+  }
+
+  const breakdown = document.getElementById('unit-breakdown');
+  if (breakdown) {
+    breakdown.innerHTML = '';
+    for (const unit of UNITS) {
+      let html = `<div style="background: var(--bg); border: 1px solid #e0dbd0; border-radius: 8px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,.02);">
+                    <div style="font-size: .85rem; font-weight: 700; color: var(--dk); margin-bottom: 1.25rem; padding-bottom: .75rem; border-bottom: 1px solid #e0dbd0;">${unit}</div>`;
+      for (const prefix of Object.keys(CHK)) {
+        if (prefix === 'int' && !['SMAK', 'SMAJ'].includes(unit)) continue;
+        
+        const unitData = summaryData[prefix].find(u => u.unit === unit);
+        const color = CHK[prefix].color;
+        html += `
+          <div style="margin-bottom: .85rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: .4rem;">
+              <span style="font-size: .7rem; font-weight: 600; color: var(--muted);">${CHK[prefix].label}</span>
+              <span style="font-size: .75rem; font-weight: 700; color: var(--dk);">${unitData.pct}%</span>
+            </div>
+            <div style="height: 6px; background: #e0dbd0; border-radius: 3px; overflow: hidden;">
+              <div style="height: 100%; border-radius: 3px; transition: width .4s ease; background: ${color}; width: ${unitData.pct}%;"></div>
+            </div>
+          </div>
+        `;
+      }
+      html += `</div>`;
+      breakdown.innerHTML += html;
+    }
+  }
+}
+
+// --- INITIALIZATION ---
+window.addEventListener('load', () => {
+  if (localStorage.getItem('sbCollapsed') === 'true') toggleSidebar();
+
+  // Wire up area cards via data-target (replaces brittle nth-child selectors)
+  document.querySelectorAll('.area-card[data-target]').forEach(card => {
+    card.addEventListener('click', function () {
+      const target = this.dataset.target;
+      const navItem = document.querySelector(`.nav-item[onclick*="'${target}'"]`);
+      nav(target, navItem);
+    });
+  });
+
+  // Clean initialization of master dropdown
+  const masterUnit = document.getElementById('master-unit');
+  if (masterUnit) masterUnit.value = '';
+
+  updateAverages();
+});
+</script>
+</body>
+</html>
